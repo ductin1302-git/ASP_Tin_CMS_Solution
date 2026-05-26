@@ -1,0 +1,41 @@
+@model CMS.Data.Entities.Post
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-light p-3 rounded-3 shadow-sm">
+            <li class="breadcrumb-item"><a href="/Post" class="text-danger text-decoration-none">Danh sách bài viết</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Chi tiết bài viết</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-9 col-md-11">
+            <article class="bg-white p-4 p-md-5 rounded-3 shadow-sm">
+                <h1 class="display-5 fw-bold text-primary mb-3">@Model.Title</h1>
+                
+                <div class="d-flex align-items-center text-muted mb-4 pb-3 border-bottom">
+                    <span class="me-3">📅 Đăng ngày: <strong>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</strong></span>
+                    <span class="badge bg-danger">Bài viết nổi bật</span>
+                </div>
+
+                <div class="text-center mb-4">
+                    <img src="@Model.ImageUrl" class="img-fluid rounded shadow-sm w-100" alt="Post Image" style="max-height: 450px; object-fit: cover;">
+                </div>
+
+                <div class="post-content fs-5 text-dark lh-lg" style="white-space: pre-line; text-align: justify; font-family: 'Inter', sans-serif;">
+                    @Model.Content
+                </div>
+
+                <div class="mt-5 border-top pt-4">
+                    <a href="/Post" class="btn btn-outline-secondary px-4 py-2 rounded-pill">
+                        ⬅️ Quay lại danh sách
+                    </a>
+                </div>
+            </article>
+        </div>
+    </div>
+</div>
