@@ -6,18 +6,18 @@ using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
-    public class UserController : Controller
+    public class OrderController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public UserController(ApplicationDbContext context)
+        public OrderController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public IActionResult Index()
         {
-            var data = _context.Users.ToList(); 
+            var data = _context.Orders.ToList(); 
             return View(data);
         }
     }
