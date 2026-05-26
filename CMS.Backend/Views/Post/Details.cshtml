@@ -1,6 +1,7 @@
 @model CMS.Data.Entities.Post
 
 @{
+    Layout = "_LayoutAdmin";
     ViewData["Title"] = "Chi tiết bài viết";
 }
 
@@ -16,8 +17,8 @@
             <div class="text-center mb-4">
                 <img src="@Model.ImageUrl" class="img-fluid rounded" alt="Thumbnail" />
             </div>
-            <div class="content" style="font-size: 1.1rem; line-height: 1.6;">
-                @Model.Content
+            <div class="content post-content" style="font-size: 1.1rem; line-height: 1.6;">
+                @Html.Raw(Model.Content)
             </div>
             
             <div class="mt-5">
