@@ -1,0 +1,52 @@
+@model CMS.Data.Entities.Order
+@{
+    ViewData["Title"] = "Cập nhật Đơn hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Cập nhật Đơn hàng: #@Model.Id</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="CustomerId">Khách hàng <span class="text-danger">*</span></label>
+                    <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.CustomerList">
+                        <option value="">-- Chọn khách hàng --</option>
+                    </select>
+                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="OrderDate">Ngày đặt <span class="text-danger">*</span></label>
+                    <input asp-for="OrderDate" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="OrderDate" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Status">Trạng thái đơn hàng</label>
+                <select asp-for="Status" class="form-control">
+                    <option value="0">Chờ duyệt</option>
+                    <option value="1">Đang giao</option>
+                    <option value="2">Đã xong</option>
+                    <option value="3">Đã hủy</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Notes">Ghi chú</label>
+                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <button type="submit" class="btn btn-warning">Cập nhật</button>
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>

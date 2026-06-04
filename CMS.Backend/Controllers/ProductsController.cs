@@ -28,9 +28,23 @@ namespace CMS.Backend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            // Lấy toàn bộ dữ liệu từ bảng Products số nhiều trong SQL Server
+            // Lấy toàn bộ dữ liệu từ bảng Products số nhiều trong SQL Server kèm Danh mục
             var products = await _context.Products
+                .Include(p => p.CategoryProduct)
                 .OrderByDescending(p => p.Id) // Sắp xếp sản phẩm mới nhất lên đầu
+                .Select(p => new {
+                    p.Id,
+                    p.Name,
+                    p.Description,
+                    p.Price,
+                    p.StockQuantity,
+                    p.ImageUrl,
+                    p.CategoryProductId,
+                    categoryProduct = p.CategoryProduct == null ? null : new {
+                        p.CategoryProduct.Id,
+                        p.CategoryProduct.Name
+                    }
+                })
                 .ToListAsync();
 
             // Trả về kết quả cho Frontend kèm mã trạng thái HTTP 200 OK (Thành công)

@@ -1,0 +1,107 @@
+@model CMS.Data.Entities.Order
+@{
+    ViewData["Title"] = "Chi tiết Đơn hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    decimal totalAmount = 0;
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Chi tiết Đơn hàng #@Model.Id</h6>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">Quay lại danh sách</a>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5 class="font-weight-bold">Thông tin Khách hàng</h5>
+                <table class="table table-borderless table-sm">
+                    <tr>
+                        <td width="120">Khách hàng:</td>
+                        <td><strong>@(Model.Customer != null ? Model.Customer.FullName : "Khách vãng lai")</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Ngày đặt:</td>
+                        <td>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                    </tr>
+                    <tr>
+                        <td>Ghi chú:</td>
+                        <td>@Model.Notes</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h5 class="font-weight-bold">Cập nhật Trạng thái</h5>
+                <form asp-action="UpdateStatus" method="post" class="d-flex align-items-start mt-3">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="form-group mb-0 mr-2 flex-grow-1">
+                        <select name="status" class="form-control">
+                            @if (Model.Status == 0) { <option value="0" selected>Chờ duyệt</option> } else { <option value="0">Chờ duyệt</option> }
+                            @if (Model.Status == 1) { <option value="1" selected>Đang giao</option> } else { <option value="1">Đang giao</option> }
+                            @if (Model.Status == 2) { <option value="2" selected>Đã xong</option> } else { <option value="2">Đã xong</option> }
+                            @if (Model.Status == 3) { <option value="3" selected>Đã hủy</option> } else { <option value="3">Đã hủy</option> }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary ml-2">Cập nhật</button>
+                </form>
+                
+                <div class="mt-3">
+                    <strong>Trạng thái hiện tại:</strong> 
+                    @if(Model.Status == 0) { <span class="badge bg-warning text-dark px-3 py-2">Chờ duyệt</span> }
+                    else if(Model.Status == 1) { <span class="badge bg-info text-dark px-3 py-2">Đang giao</span> }
+                    else if(Model.Status == 2) { <span class="badge bg-success px-3 py-2">Đã xong</span> }
+                    else { <span class="badge bg-secondary px-3 py-2">Hủy</span> }
+                </div>
+            </div>
+        </div>
+
+        <h5 class="font-weight-bold mb-3 border-bottom pb-2">Danh sách Sản phẩm đã đặt</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped text-center">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Hình ảnh</th>
+                        <th>Số lượng</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.OrderDetails != null && Model.OrderDetails.Any())
+                    {
+                        int stt = 1;
+                        foreach (var item in Model.OrderDetails)
+                        {
+                            decimal lineTotal = item.Quantity * item.UnitPrice;
+                            totalAmount += lineTotal;
+                            <tr>
+                                <td class="align-middle">@(stt++)</td>
+                                <td class="align-middle">@(item.Product != null ? item.Product.Name : "Sản phẩm đã xóa")</td>
+                                <td class="align-middle">
+                                    @if(item.Product != null && !string.IsNullOrEmpty(item.Product.ImageUrl))
+                                    {
+                                        <img src="@item.Product.ImageUrl" alt="Product Image" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                                    }
+                                </td>
+                                <td class="align-middle">@item.Quantity</td>
+                                <td class="align-middle">@item.UnitPrice.ToString("#,##0") đ</td>
+                                <td class="align-middle font-weight-bold text-danger">@lineTotal.ToString("#,##0") đ</td>
+                            </tr>
+                        }
+                        <tr class="bg-light">
+                            <td colspan="5" class="text-right font-weight-bold text-uppercase">Tổng thanh toán:</td>
+                            <td class="font-weight-bold text-danger" style="font-size: 1.2rem;">@totalAmount.ToString("#,##0") đ</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-muted">Đơn hàng này không có chi tiết sản phẩm.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

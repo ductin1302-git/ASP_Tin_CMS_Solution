@@ -1,0 +1,51 @@
+@model CMS.Data.Entities.OrderDetail
+@{
+    ViewData["Title"] = "Cập nhật Chi tiết Đơn hàng";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Cập nhật Chi tiết Đơn hàng: #@Model.Id</h6>
+    </div>
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="OrderId">Mã Đơn hàng <span class="text-danger">*</span></label>
+                    <select asp-for="OrderId" class="form-control" asp-items="ViewBag.OrderList">
+                        <option value="">-- Chọn đơn hàng --</option>
+                    </select>
+                    <span asp-validation-for="OrderId" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="ProductId">Sản phẩm <span class="text-danger">*</span></label>
+                    <select asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductList">
+                        <option value="">-- Chọn sản phẩm --</option>
+                    </select>
+                    <span asp-validation-for="ProductId" class="text-danger"></span>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="Quantity">Số lượng <span class="text-danger">*</span></label>
+                    <input asp-for="Quantity" type="number" class="form-control" min="1" />
+                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 form-group mb-3">
+                    <label asp-for="UnitPrice">Đơn giá tại thời điểm mua <span class="text-danger">*</span></label>
+                    <input asp-for="UnitPrice" type="number" class="form-control" min="0" />
+                    <span asp-validation-for="UnitPrice" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group mt-3">
+                <button type="submit" class="btn btn-warning">Cập nhật</button>
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
