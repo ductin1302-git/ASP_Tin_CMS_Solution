@@ -33,11 +33,19 @@
                     <td>
                         @if (user.Role == "Admin")
                         {
-                            <span class="badge bg-danger">@user.Role</span>
+                            <span class="badge bg-danger">Admin (Quản trị)</span>
+                        }
+                        else if (user.Role == "Editor")
+                        {
+                            <span class="badge bg-warning text-dark">Editor (Nhân viên)</span>
+                        }
+                        else if (user.Role == "User" || user.Role == "Customer")
+                        {
+                            <span class="badge bg-success">Customer (Khách hàng)</span>
                         }
                         else
                         {
-                            <span class="badge bg-primary">@user.Role</span>
+                            <span class="badge bg-secondary">@user.Role</span>
                         }
                     </td>
                     <td>
