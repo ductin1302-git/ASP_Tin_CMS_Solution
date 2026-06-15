@@ -43,5 +43,8 @@ namespace CMS.Data.Entities
 
         [ForeignKey("CategoryProductId")]
         public virtual CategoryProduct? CategoryProduct { get; set; } // Quan hệ liên kết N-1
+
+        // Flag cho tính năng xóa tạm (Soft Delete)
+        public bool IsDeleted { get; set; } = false;
     }
 }

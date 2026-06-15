@@ -1,0 +1,85 @@
+@model IEnumerable<CMS.Data.Entities.Product>
+@{
+    ViewData["Title"] = "Thùng rác sản phẩm";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">🗑️ Thùng Rác Sản Phẩm</h1>
+        <p class="page-subtitle">Quản lý các sản phẩm đã xóa tạm</p>
+    </div>
+    <a asp-action="Index" class="btn-sport btn-secondary-sport">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+<div class="data-card">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <span class="empty-state-icon">✨</span>
+            <div class="empty-state-title">Thùng rác trống</div>
+            <div class="empty-state-text">Không có sản phẩm nào trong thùng rác</div>
+        </div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
+                        <th>Giá bán</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><span class="id-pill" style="background:#f3f4f6;color:#6b7280;">#@item.Id</span></td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl" alt="@item.Name" class="tbl-img" style="filter: grayscale(100%); opacity: 0.7;" />
+                                }
+                                else
+                                {
+                                    <div class="tbl-img-placeholder"><i class="bi bi-image"></i></div>
+                                }
+                            </td>
+                            <td style="color:#6b7280;font-weight:600;max-width:200px;text-decoration:line-through;">
+                                <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@item.Name</div>
+                            </td>
+                            <td>
+                                <span class="badge-admin" style="background:#f3f4f6;color:#6b7280;">
+                                    <i class="bi bi-tags"></i>
+                                    @(item.CategoryProduct != null ? item.CategoryProduct.Name : "Chưa chọn")
+                                </span>
+                            </td>
+                            <td class="price-text" style="color:#9ca3af;">@item.Price.ToString("N0") ₫</td>
+                            <td>
+                                <div style="display:flex;gap:6px;">
+                                    <form asp-action="Restore" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                        <button type="submit" class="btn-icon btn-primary-sport" title="Khôi phục" style="border:none;">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
+                                    </form>
+                                    <form asp-action="HardDelete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN sản phẩm «@item.Name»? Hành động này không thể hoàn tác và sẽ gây lỗi nếu sản phẩm đã nằm trong đơn hàng!');" style="display:inline;">
+                                        <button type="submit" class="btn-icon btn-danger-sport" title="Xóa vĩnh viễn" style="border:none;background:#991b1b;">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

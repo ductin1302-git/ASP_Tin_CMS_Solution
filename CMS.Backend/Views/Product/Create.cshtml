@@ -1,57 +1,82 @@
 @model CMS.Data.Entities.Product
 @{
-    ViewData["Title"] = "Thêm Sản phẩm";
+    ViewData["Title"] = "Thêm sản phẩm";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Thêm Sản phẩm Mới</h6>
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">➕ Thêm Sản Phẩm Mới</h1>
+        <p class="page-subtitle">Điền thông tin sản phẩm thể thao mới</p>
     </div>
-    <div class="card-body">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <div class="form-group mb-3">
-                <label asp-for="Name">Tên sản phẩm <span class="text-danger">*</span></label>
-                <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm..." />
-                <span asp-validation-for="Name" class="text-danger"></span>
+    <a asp-action="Index" class="btn-sport btn-secondary-sport">
+        <i class="bi bi-arrow-left"></i> Quay lại danh sách
+    </a>
+</div>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-card">
+        <div class="form-card-header">
+            <div class="brand-icon" style="width:36px;height:36px;font-size:16px;">🏅</div>
+            <span class="form-card-title">Thông tin sản phẩm</span>
+        </div>
+        <div class="form-card-body">
+
+            <div class="form-section-title">Thông tin cơ bản</div>
+
+            <div class="form-group-admin">
+                <label class="form-label-admin">Tên sản phẩm <span style="color:var(--danger)">*</span></label>
+                <input asp-for="Name" class="form-control-admin" placeholder="VD: Giày chạy bộ Nike Air Zoom..." />
+                <span asp-validation-for="Name" class="field-validation-error"></span>
             </div>
-            
-            <div class="form-group mb-3">
-                <label asp-for="CategoryProductId">Danh mục sản phẩm <span class="text-danger">*</span></label>
-                <select asp-for="CategoryProductId" class="form-control" asp-items="ViewBag.CategoryList">
+
+            <div class="form-group-admin">
+                <label class="form-label-admin">Danh mục sản phẩm <span style="color:var(--danger)">*</span></label>
+                <select asp-for="CategoryProductId" class="form-control-admin" asp-items="ViewBag.CategoryList">
                     <option value="">-- Chọn danh mục --</option>
                 </select>
-                <span asp-validation-for="CategoryProductId" class="text-danger"></span>
+                <span asp-validation-for="CategoryProductId" class="field-validation-error"></span>
             </div>
 
-            <div class="row">
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="Price">Giá tiền <span class="text-danger">*</span></label>
-                    <input asp-for="Price" type="number" class="form-control" min="0" value="0" />
-                    <span asp-validation-for="Price" class="text-danger"></span>
+            <div class="form-row">
+                <div class="form-group-admin">
+                    <label class="form-label-admin">Giá bán (VNĐ) <span style="color:var(--danger)">*</span></label>
+                    <input asp-for="Price" type="number" class="form-control-admin" min="0" placeholder="0" />
+                    <span asp-validation-for="Price" class="field-validation-error"></span>
                 </div>
-                <div class="col-md-6 form-group mb-3">
-                    <label asp-for="StockQuantity">Số lượng tồn kho <span class="text-danger">*</span></label>
-                    <input asp-for="StockQuantity" type="number" class="form-control" min="0" value="0" />
-                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                <div class="form-group-admin">
+                    <label class="form-label-admin">Số lượng tồn kho <span style="color:var(--danger)">*</span></label>
+                    <input asp-for="StockQuantity" type="number" class="form-control-admin" min="0" placeholder="0" />
+                    <span asp-validation-for="StockQuantity" class="field-validation-error"></span>
                 </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label>Hình ảnh sản phẩm</label>
-                <input type="file" name="uploadImage" class="form-control-file" accept="image/*" />
+            <div class="form-section-title" style="margin-top:24px;">Hình ảnh & mô tả</div>
+
+            <div class="form-group-admin">
+                <label class="form-label-admin">Hình ảnh sản phẩm</label>
+                <input type="file" name="uploadImage" class="form-control-admin" accept="image/*"
+                       style="padding:8px 14px;cursor:pointer;" />
+                <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">
+                    <i class="bi bi-info-circle"></i> Hỗ trợ JPG, PNG, WEBP — tối đa 5MB
+                </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Description">Mô tả sản phẩm</label>
-                <textarea asp-for="Description" class="form-control" rows="5" placeholder="Nhập mô tả chi tiết..."></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
+            <div class="form-group-admin">
+                <label class="form-label-admin">Mô tả sản phẩm</label>
+                <textarea asp-for="Description" class="form-control-admin" rows="4"
+                          placeholder="Nhập mô tả chi tiết về sản phẩm..."></textarea>
+                <span asp-validation-for="Description" class="field-validation-error"></span>
             </div>
 
-            <div class="form-group mt-4">
-                <button type="submit" class="btn btn-success">Lưu sản phẩm</button>
-                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            <div class="form-actions">
+                <button type="submit" class="btn-sport btn-primary-sport">
+                    <i class="bi bi-check-lg"></i> Lưu sản phẩm
+                </button>
+                <a asp-action="Index" class="btn-sport btn-secondary-sport">
+                    <i class="bi bi-x-lg"></i> Hủy
+                </a>
             </div>
-        </form>
+        </div>
     </div>
-</div>
+</form>

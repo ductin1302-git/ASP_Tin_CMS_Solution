@@ -1,0 +1,61 @@
+@model CMS.Data.Entities.Contact
+@{
+    ViewData["Title"] = "Chi tiết liên hệ";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">📧 Chi Tiết Liên Hệ</h1>
+        <p class="page-subtitle">Xem thông tin chi tiết phản hồi của khách hàng</p>
+    </div>
+    <a asp-action="Index" class="btn-sport btn-secondary-sport">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+<div class="data-card">
+    <div style="margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+        <h3 style="margin-bottom: 8px; color: var(--text-primary);">@Model.Subject</h3>
+        <div style="font-size: 14px; color: var(--text-muted); display: flex; gap: 16px;">
+            <span><i class="bi bi-calendar3"></i> @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span>
+            <span>
+                @if (Model.IsRead)
+                {
+                    <span class="badge-admin badge-secondary">Đã xem</span>
+                }
+            </span>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-bottom: 24px;">
+        <div style="background: var(--bg-body); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border);">
+            <h4 style="font-size: 16px; margin-bottom: 12px; color: var(--text-primary); border-bottom: 1px solid var(--border); padding-bottom: 8px;">Thông tin người gửi</h4>
+            <div style="margin-bottom: 8px;">
+                <strong>Họ tên:</strong> @Model.Name
+            </div>
+            <div style="margin-bottom: 8px;">
+                <strong>Email:</strong> <a href="mailto:@Model.Email">@Model.Email</a>
+            </div>
+            <div>
+                <strong>Điện thoại:</strong> <a href="tel:@Model.Phone">@Model.Phone</a>
+            </div>
+        </div>
+        
+        <div>
+            <h4 style="font-size: 16px; margin-bottom: 12px; color: var(--text-primary);">Nội dung tin nhắn:</h4>
+            <div style="background: var(--bg-input); padding: 16px; border-radius: var(--radius-md); white-space: pre-wrap; line-height: 1.6; border: 1px solid var(--border);">@Model.Message</div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-top: 24px;">
+        <a href="mailto:@Model.Email" class="btn-sport btn-primary-sport">
+            <i class="bi bi-reply"></i> Trả lời qua Email
+        </a>
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa liên hệ này?');">
+            <button type="submit" class="btn-sport btn-danger-sport">
+                <i class="bi bi-trash3"></i> Xóa liên hệ
+            </button>
+        </form>
+    </div>
+</div>

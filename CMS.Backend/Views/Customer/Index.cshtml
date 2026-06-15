@@ -1,17 +1,39 @@
 @model IEnumerable<CMS.Data.Entities.Customer>
 @{
-    ViewData["Title"] = "Quản lý Khách hàng";
+    ViewData["Title"] = "Khách hàng";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">Danh sách Khách hàng</h6>
-        <a asp-action="Create" class="btn btn-primary btn-sm">Thêm mới</a>
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">👥 Khách Hàng</h1>
+        <p class="page-subtitle">Quản lý thông tin khách hàng đăng ký</p>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" width="100%" cellspacing="0">
+    <a asp-action="Create" class="btn-sport btn-primary-sport">
+        <i class="bi bi-person-plus"></i> Thêm khách hàng
+    </a>
+</div>
+
+<div class="data-card">
+    <div class="data-card-header">
+        <div class="data-card-title">
+            <span class="title-icon"><i class="bi bi-people"></i></span>
+            Danh sách khách hàng
+            <span class="badge-admin badge-success" style="margin-left:6px;">@Model.Count() khách</span>
+        </div>
+    </div>
+    <div style="overflow-x:auto;">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <span class="empty-state-icon">👤</span>
+                <div class="empty-state-title">Chưa có khách hàng nào</div>
+                <div class="empty-state-text">Khách hàng đăng ký sẽ xuất hiện tại đây</div>
+            </div>
+        }
+        else
+        {
+            <table class="admin-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -19,26 +41,57 @@
                         <th>Email</th>
                         <th>Điện thoại</th>
                         <th>Địa chỉ</th>
-                        <th>Hành động</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.Id</td>
-                            <td>@item.FullName</td>
-                            <td>@item.Email</td>
-                            <td>@item.Phone</td>
-                            <td>@item.Address</td>
+                            <td><span class="id-pill">#@item.Id</span></td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Sửa</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" onclick="return confirm('Xóa khách hàng này có thể ảnh hưởng đến lịch sử đơn hàng. Bạn có chắc chắn muốn xóa?');">Xóa</a>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#0088BB);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;">
+                                        @item.FullName.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <span style="color:var(--text-primary);font-weight:600;">@item.FullName</span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="mailto:@item.Email" style="color:var(--accent);text-decoration:none;font-size:13px;">
+                                    @item.Email
+                                </a>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Phone))
+                                {
+                                    <span class="badge-admin badge-info">
+                                        <i class="bi bi-telephone"></i> @item.Phone
+                                    </span>
+                                }
+                                else { <span style="color:var(--text-muted);">—</span> }
+                            </td>
+                            <td style="max-width:180px;">
+                                <span style="font-size:12px;color:var(--text-muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    @(string.IsNullOrEmpty(item.Address) ? "—" : item.Address)
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:6px;">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn-icon btn-warning-sport" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id"
+                                       class="btn-icon btn-danger-sport" title="Xóa"
+                                       onclick="return confirm('Xóa khách hàng «@item.FullName»?')">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-        </div>
+        }
     </div>
 </div>
