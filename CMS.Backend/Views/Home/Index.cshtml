@@ -1,24 +1,244 @@
-@model IEnumerable<CMS.Data.Entities.Post>
+@{
+    ViewData["Title"] = "Bảng điều khiển";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4 text-danger">TIN TỨC MỚI NHẤT</h2>
-    <div class="row">
-        @foreach (var item in Model)
-        {
-            <div class="col-md-4">
-                <div class="card shadow-sm h-100">
-                    <img src="@item.ImageUrl" class="card-img-top" alt="Thumbnail" style="height: 200px; object-fit: cover;">
-                    <div class="card-body">
-                        <span class="badge bg-primary mb-2">@item.Category?.Name</span>
-                        <h5 class="card-title">@item.Title</h5>
-                        <p class="card-text text-truncate">@item.Content</p>
-                        <a href="/Post/Details/@item.Id" class="btn btn-outline-danger btn-sm">Đọc tiếp</a>
-                    </div>
-                    <div class="card-footer text-muted small">
-                        Ngày đăng: @item.CreatedDate.ToString("dd/MM/yyyy")
-                    </div>
-                </div>
+    int totalProducts   = ViewBag.TotalProducts   ?? 0;
+    int totalOrders     = ViewBag.TotalOrders     ?? 0;
+    int totalCustomers  = ViewBag.TotalCustomers  ?? 0;
+    int totalPosts      = ViewBag.TotalPosts      ?? 0;
+    int pendingOrders   = ViewBag.PendingOrders   ?? 0;
+    int deliveringOrders= ViewBag.DeliveringOrders?? 0;
+    int doneOrders      = ViewBag.DoneOrders      ?? 0;
+
+    var latestOrders       = ViewBag.LatestOrders       as IEnumerable<CMS.Data.Entities.Order>;
+    var lowStockProducts   = ViewBag.LowStockProducts   as IEnumerable<CMS.Data.Entities.Product>;
+}
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">🏋️ Bảng Điều Khiển</h1>
+        <p class="page-subtitle">Tổng quan hoạt động hệ thống SportZone</p>
+    </div>
+    <div style="display:flex;gap:10px;">
+        <a asp-controller="Product" asp-action="Create" class="btn-sport btn-primary-sport">
+            <i class="bi bi-plus-lg"></i> Thêm sản phẩm
+        </a>
+        <a asp-controller="Order" asp-action="Index" class="btn-sport btn-secondary-sport">
+            <i class="bi bi-bag-check"></i> Xem đơn hàng
+        </a>
+    </div>
+</div>
+
+<!-- ===== STAT CARDS ===== -->
+<div class="stats-grid">
+    <div class="stat-card" style="--card-accent:var(--primary)">
+        <div class="stat-card-inner">
+            <div class="stat-icon-box" style="--icon-bg:rgba(255,107,53,0.12);--icon-color:var(--primary)">
+                <i class="bi bi-box-seam-fill"></i>
             </div>
-        }
+            <div class="stat-info">
+                <div class="stat-value" data-count="@totalProducts">@totalProducts</div>
+                <div class="stat-label">Sản phẩm thể thao</div>
+            </div>
+        </div>
+        <a href="/Product/Index" style="font-size:11px;color:var(--primary);text-decoration:none;display:flex;align-items:center;gap:4px;margin-top:12px;">
+            Quản lý <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="stat-card" style="--card-accent:var(--accent)">
+        <div class="stat-card-inner">
+            <div class="stat-icon-box" style="--icon-bg:var(--info-bg);--icon-color:var(--accent)">
+                <i class="bi bi-bag-check-fill"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-value" data-count="@totalOrders">@totalOrders</div>
+                <div class="stat-label">Tổng đơn hàng</div>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <span class="badge-admin badge-warning">
+                <i class="bi bi-clock"></i> @pendingOrders chờ
+            </span>
+            <span class="badge-admin badge-info">
+                <i class="bi bi-truck"></i> @deliveringOrders giao
+            </span>
+            <span class="badge-admin badge-success">
+                <i class="bi bi-check-circle"></i> @doneOrders xong
+            </span>
+        </div>
+    </div>
+
+    <div class="stat-card" style="--card-accent:var(--success)">
+        <div class="stat-card-inner">
+            <div class="stat-icon-box" style="--icon-bg:var(--success-bg);--icon-color:var(--success)">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-value" data-count="@totalCustomers">@totalCustomers</div>
+                <div class="stat-label">Khách hàng</div>
+            </div>
+        </div>
+        <div class="stat-trend up" style="margin-top:8px;">
+            <i class="bi bi-arrow-up"></i> Đang tăng
+        </div>
+    </div>
+
+    <div class="stat-card" style="--card-accent:var(--warning)">
+        <div class="stat-card-inner">
+            <div class="stat-icon-box" style="--icon-bg:var(--warning-bg);--icon-color:var(--warning)">
+                <i class="bi bi-newspaper"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-value" data-count="@totalPosts">@totalPosts</div>
+                <div class="stat-label">Bài viết & Tin tức</div>
+            </div>
+        </div>
+        <a href="/Post/Index" style="font-size:11px;color:var(--warning);text-decoration:none;display:flex;align-items:center;gap:4px;margin-top:12px;">
+            Quản lý <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+</div>
+
+<!-- ===== DASHBOARD GRID ===== -->
+<div class="dashboard-grid">
+
+    <!-- ĐƠN HÀNG MỚI NHẤT -->
+    <div class="data-card">
+        <div class="data-card-header">
+            <div class="data-card-title">
+                <span class="title-icon"><i class="bi bi-bag-check"></i></span>
+                Đơn hàng mới nhất
+            </div>
+            <a asp-controller="Order" asp-action="Index" class="btn-sport btn-sm-sport btn-secondary-sport">
+                Xem tất cả <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div style="overflow-x:auto;">
+            @if (latestOrders != null && latestOrders.Any())
+            {
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Mã ĐH</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in latestOrders)
+                        {
+                            <tr>
+                                <td><span class="id-pill">#@order.Id</span></td>
+                                <td style="color:var(--text-primary);font-weight:500;">
+                                    @(order.Customer?.FullName ?? "Khách vãng lai")
+                                </td>
+                                <td>@order.OrderDate.ToString("dd/MM/yy HH:mm")</td>
+                                <td>
+                                    @if (order.Status == 0)
+                                    {
+                                        <span class="badge-admin order-status-0"><i class="bi bi-hourglass-split"></i> Chờ duyệt</span>
+                                    }
+                                    else if (order.Status == 1)
+                                    {
+                                        <span class="badge-admin order-status-1"><i class="bi bi-truck"></i> Đang giao</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-admin order-status-2"><i class="bi bi-check-circle-fill"></i> Đã xong</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <span class="empty-state-icon">📦</span>
+                    <div class="empty-state-title">Chưa có đơn hàng nào</div>
+                    <div class="empty-state-text">Các đơn hàng mới sẽ hiển thị tại đây</div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- HÀNG TỒN KHO THẤP -->
+    <div class="data-card">
+        <div class="data-card-header">
+            <div class="data-card-title">
+                <span class="title-icon" style="background:rgba(255,61,113,0.15);color:var(--danger)">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </span>
+                Tồn kho thấp
+            </div>
+            <a asp-controller="Product" asp-action="Index" class="btn-sport btn-sm-sport btn-secondary-sport">
+                Quản lý
+            </a>
+        </div>
+        <div style="padding:12px 16px;">
+            @if (lowStockProducts != null && lowStockProducts.Any())
+            {
+                @foreach (var product in lowStockProducts)
+                {
+                    int fillPct = Math.Min(100, product.StockQuantity * 5);
+                    string fillClass = product.StockQuantity <= 3 ? "critical" : (product.StockQuantity <= 8 ? "low" : "");
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+                        <div style="width:36px;height:36px;border-radius:8px;background:var(--bg-input);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:18px;flex-shrink:0;">
+                            🏃
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                @product.Name
+                            </div>
+                            <div class="stock-indicator">
+                                <div class="stock-bar">
+                                    <div class="stock-fill @fillClass" style="width:@fillPct%"></div>
+                                </div>
+                                <span style="font-size:12px;color:@(product.StockQuantity <= 3 ? "var(--danger)" : product.StockQuantity <= 8 ? "var(--warning)" : "var(--success)")">
+                                    @product.StockQuantity còn
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state" style="padding:30px 20px;">
+                    <span class="empty-state-icon" style="font-size:32px;">✅</span>
+                    <div class="empty-state-title">Tồn kho ổn định</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ===== QUICK LINKS ===== -->
+<div style="margin-top:20px;">
+    <div class="data-card">
+        <div class="data-card-header">
+            <div class="data-card-title">
+                <span class="title-icon"><i class="bi bi-lightning"></i></span>
+                Thao tác nhanh
+            </div>
+        </div>
+        <div style="padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+            <a asp-controller="Product" asp-action="Create" class="btn-sport btn-primary-sport" style="justify-content:center;">
+                <i class="bi bi-box-seam"></i> Thêm sản phẩm
+            </a>
+            <a asp-controller="Post" asp-action="Create" class="btn-sport btn-secondary-sport" style="justify-content:center;">
+                <i class="bi bi-pencil-square"></i> Viết bài mới
+            </a>
+            <a asp-controller="Customer" asp-action="Index" class="btn-sport btn-secondary-sport" style="justify-content:center;">
+                <i class="bi bi-people"></i> Khách hàng
+            </a>
+            <a asp-controller="CategoryProduct" asp-action="Create" class="btn-sport btn-secondary-sport" style="justify-content:center;">
+                <i class="bi bi-tags"></i> Thêm danh mục
+            </a>
+        </div>
     </div>
 </div>

@@ -15,6 +15,8 @@ import './index.css';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/about" element={<AboutUs />} />
+              <Route path="/contact" element={<ContactUs />} />
               <Route path="*" element={<div className="container" style={{padding: '100px 0'}}><h2>404 - Không tìm thấy trang</h2></div>} />
             </Routes>
           </main>

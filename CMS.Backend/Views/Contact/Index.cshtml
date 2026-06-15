@@ -1,0 +1,86 @@
+@model IEnumerable<CMS.Data.Entities.Contact>
+@{
+    ViewData["Title"] = "Liên hệ";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">📧 Quản Lý Liên Hệ</h1>
+        <p class="page-subtitle">Xem và quản lý các ý kiến phản hồi từ khách hàng</p>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="data-card">
+        <div class="empty-state">
+            <span class="empty-state-icon">📭</span>
+            <div class="empty-state-title">Chưa có liên hệ nào</div>
+            <div class="empty-state-text">Khi khách hàng gửi liên hệ, dữ liệu sẽ hiển thị ở đây</div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="data-card p-0">
+        <div class="table-responsive">
+            <table class="table-admin">
+                <thead>
+                    <tr>
+                        <th style="width:50px;text-align:center;">#</th>
+                        <th>Khách Hàng</th>
+                        <th>Chủ Đề</th>
+                        <th>Ngày Gửi</th>
+                        <th style="text-align:center;">Trạng Thái</th>
+                        <th style="width:120px;text-align:center;">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ int i = 1; }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="text-align:center;">@(i++)</td>
+                            <td>
+                                <div style="font-weight:600;color:var(--text-primary);">@item.Name</div>
+                                <div style="font-size:12px;color:var(--text-muted);">
+                                    <i class="bi bi-envelope"></i> @item.Email<br />
+                                    <i class="bi bi-telephone"></i> @item.Phone
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-weight:500;">@item.Subject</div>
+                            </td>
+                            <td>
+                                @item.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+                            <td style="text-align:center;">
+                                @if (item.IsRead)
+                                {
+                                    <span class="badge-admin badge-secondary">Đã đọc</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-admin badge-warning">Chưa đọc</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-buttons" style="justify-content:center;">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn-action btn-view" title="Xem chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa liên hệ này?');">
+                                        <button type="submit" class="btn-action btn-delete" title="Xóa" style="border:none;background:none;padding:0;">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

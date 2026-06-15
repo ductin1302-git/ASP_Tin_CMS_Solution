@@ -1,55 +1,124 @@
 @model IEnumerable<CMS.Data.Entities.Product>
 @{
-    ViewData["Title"] = "Quản lý Sản phẩm";
+    ViewData["Title"] = "Sản phẩm thể thao";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary">Danh sách Sản phẩm</h6>
-        <a asp-action="Create" class="btn btn-primary btn-sm">Thêm mới</a>
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">🏅 Sản Phẩm Thể Thao</h1>
+        <p class="page-subtitle">Quản lý toàn bộ sản phẩm trong cửa hàng</p>
     </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" width="100%" cellspacing="0">
+    <div style="display:flex;gap:12px;align-items:center;">
+        <form asp-action="ImportExcel" method="post" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:center;">
+            <input type="file" name="file" accept=".xlsx" required style="font-size:12px;padding:4px;" />
+            <button type="submit" class="btn-sport btn-sm-sport" style="background:#10b981;color:white;border:none;">
+                <i class="bi bi-file-earmark-arrow-up"></i> Import Excel
+            </button>
+        </form>
+        <a asp-action="Trash" class="btn-sport" style="background:#ef4444;color:white;">
+            <i class="bi bi-trash"></i> Thùng rác
+        </a>
+        <a asp-action="Create" class="btn-sport btn-primary-sport">
+            <i class="bi bi-plus-lg"></i> Thêm sản phẩm
+        </a>
+    </div>
+</div>
+
+<div class="data-card">
+    <div class="data-card-header">
+        <div class="data-card-title">
+            <span class="title-icon"><i class="bi bi-box-seam"></i></span>
+            Danh sách sản phẩm
+            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.Count() sản phẩm</span>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <span class="empty-state-icon">📦</span>
+            <div class="empty-state-title">Chưa có sản phẩm nào</div>
+            <div class="empty-state-text">Hãy thêm sản phẩm thể thao đầu tiên của bạn</div>
+            <a asp-action="Create" class="btn-sport btn-primary-sport" style="margin-top:16px;display:inline-flex;">
+                <i class="bi bi-plus-lg"></i> Thêm ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div style="overflow-x:auto;">
+            <table class="admin-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Hình ảnh</th>
                         <th>Tên sản phẩm</th>
                         <th>Danh mục</th>
-                        <th>Giá tiền</th>
+                        <th>Giá bán</th>
                         <th>Tồn kho</th>
-                        <th>Hành động</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
+                        int fillPct = Math.Min(100, item.StockQuantity * 5);
+                        string fillClass = item.StockQuantity <= 3 ? "critical" : (item.StockQuantity <= 8 ? "low" : "");
                         <tr>
-                            <td>@item.Id</td>
+                            <td><span class="id-pill">#@item.Id</span></td>
                             <td>
                                 @if (!string.IsNullOrEmpty(item.ImageUrl))
                                 {
-                                    <img src="@item.ImageUrl" alt="@item.Name" style="width: 80px; height: 80px; object-fit: cover;" class="img-thumbnail" />
+                                    <img src="@item.ImageUrl" alt="@item.Name" class="tbl-img" />
                                 }
                                 else
                                 {
-                                    <span class="text-muted">Chưa có ảnh</span>
+                                    <div class="tbl-img-placeholder"><i class="bi bi-image"></i></div>
                                 }
                             </td>
-                            <td>@item.Name</td>
-                            <td>@(item.CategoryProduct != null ? item.CategoryProduct.Name : "Chưa chọn")</td>
-                            <td>@item.Price.ToString("N0") VNĐ</td>
-                            <td>@item.StockQuantity</td>
+                            <td style="color:var(--text-primary);font-weight:600;max-width:200px;">
+                                <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">@item.Name</div>
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <div style="font-size:11px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                        @item.Description
+                                    </div>
+                                }
+                            </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Sửa</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
+                                <span class="badge-admin badge-info">
+                                    <i class="bi bi-tags"></i>
+                                    @(item.CategoryProduct != null ? item.CategoryProduct.Name : "Chưa chọn")
+                                </span>
+                            </td>
+                            <td class="price-text">@item.Price.ToString("N0") ₫</td>
+                            <td>
+                                <div class="stock-indicator">
+                                    <div class="stock-bar">
+                                        <div class="stock-fill @fillClass" style="width:@fillPct%"></div>
+                                    </div>
+                                    <span style="color:@(item.StockQuantity <= 3 ? "var(--danger)" : item.StockQuantity <= 8 ? "var(--warning)" : "var(--success)")">
+                                        @item.StockQuantity
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:6px;">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn-icon btn-warning-sport" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa tạm sản phẩm «@item.Name»?');" style="display:inline;">
+                                        <button type="submit" class="btn-icon btn-danger-sport" title="Xóa tạm" style="border:none;">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-    </div>
+    }
 </div>

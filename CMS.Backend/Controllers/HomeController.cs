@@ -16,14 +16,32 @@ namespace CMS.Backend.Controllers
 
         public IActionResult Index()
         {
-            // LINQ: Lấy 3 bài viết mới nhất
-            var latestPosts = _context.Posts
-                              .Include(p => p.Category) // Lấy kèm tên danh mục để hiển thị 
-                              .OrderByDescending(p => p.CreatedDate) // Sắp xếp ngày mới nhất lên đầu 
-                              .Take(3) // Chỉ lấy đúng 3 bản tin đầu tiên
-                              .ToList();
+            // Truyền thống kê tổng quan lên Dashboard
+            ViewBag.TotalProducts    = _context.Products.Count();
+            ViewBag.TotalOrders      = _context.Orders.Count();
+            ViewBag.TotalCustomers   = _context.Customers.Count();
+            ViewBag.TotalCategories  = _context.Categories.Count();
+            ViewBag.PendingOrders    = _context.Orders.Count(o => o.Status == 0);
+            ViewBag.DeliveringOrders = _context.Orders.Count(o => o.Status == 1);
+            ViewBag.DoneOrders       = _context.Orders.Count(o => o.Status == 2);
+            ViewBag.TotalPosts       = _context.Posts.Count();
 
-            return View(latestPosts);
+            // Lấy 5 đơn hàng mới nhất
+            var latestOrders = _context.Orders
+                .Include(o => o.Customer)
+                .OrderByDescending(o => o.Id)
+                .Take(5)
+                .ToList();
+            ViewBag.LatestOrders = latestOrders;
+
+            // Lấy 5 sản phẩm tồn kho thấp nhất
+            var lowStockProducts = _context.Products
+                .OrderBy(p => p.StockQuantity)
+                .Take(5)
+                .ToList();
+            ViewBag.LowStockProducts = lowStockProducts;
+
+            return View();
         }
     }
 }

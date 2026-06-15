@@ -33,6 +33,8 @@ const Header = () => {
             <li><Link to="/shop" onClick={() => setIsMobileMenuOpen(false)}>Cửa Hàng</Link></li>
             <li><Link to="/categories" onClick={() => setIsMobileMenuOpen(false)}>Danh Mục</Link></li>
             <li><Link to="/news" onClick={() => setIsMobileMenuOpen(false)}>Tin Tức</Link></li>
+            <li><Link to="/about" onClick={() => setIsMobileMenuOpen(false)}>Giới Thiệu</Link></li>
+            <li><Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Liên Hệ</Link></li>
           </ul>
         </nav>
 

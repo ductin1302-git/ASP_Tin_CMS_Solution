@@ -1,64 +1,97 @@
 @model IEnumerable<CMS.Data.Entities.User>
-
 @{
-    Layout = "_LayoutAdmin";
-    ViewData["Title"] = "Quản lý thành viên";
+    ViewData["Title"] = "Quản trị viên";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-dark">QUẢN LÝ THÀNH VIÊN</h2>
-        <a asp-action="Create" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Thêm thành viên mới
-        </a>
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">🛡️ Quản Trị Viên</h1>
+        <p class="page-subtitle">Quản lý tài khoản nhân viên hệ thống</p>
     </div>
+    <a asp-action="Create" class="btn-sport btn-primary-sport">
+        <i class="bi bi-person-plus"></i> Thêm tài khoản
+    </a>
+</div>
 
-    <table class="table table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Tên đăng nhập</th>
-                <th>Họ và tên</th>
-                <th>Vai trò</th>
-                <th style="width: 150px;">Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model)
-            {
-                <tr>
-                    <td>@user.Id</td>
-                    <td>@user.Username</td>
-                    <td>@user.FullName</td>
-                    <td>
-                        @if (user.Role == "Admin")
-                        {
-                            <span class="badge bg-danger">Admin (Quản trị)</span>
-                        }
-                        else if (user.Role == "Editor")
-                        {
-                            <span class="badge bg-warning text-dark">Editor (Nhân viên)</span>
-                        }
-                        else if (user.Role == "User" || user.Role == "Customer")
-                        {
-                            <span class="badge bg-success">Customer (Khách hàng)</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">@user.Role</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">
-                            Sửa
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger" 
-                           onclick="return confirm('Bạn có chắc chắn muốn xóa thành viên @user.Username không?')">
-                            Xóa
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="data-card">
+    <div class="data-card-header">
+        <div class="data-card-title">
+            <span class="title-icon"><i class="bi bi-shield-person"></i></span>
+            Danh sách quản trị viên
+            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.Count() tài khoản</span>
+        </div>
+    </div>
+    <div style="overflow-x:auto;">
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <span class="empty-state-icon">🛡️</span>
+                <div class="empty-state-title">Chưa có tài khoản quản trị</div>
+            </div>
+        }
+        else
+        {
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tài khoản</th>
+                        <th>Họ và tên</th>
+                        <th>Vai trò</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td><span class="id-pill">#@user.Id</span></td>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#FF9F68);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;flex-shrink:0;">
+                                        @user.Username.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <span style="color:var(--text-primary);font-weight:600;font-family:monospace;">@user.Username</span>
+                                </div>
+                            </td>
+                            <td style="color:var(--text-primary);">@user.FullName</td>
+                            <td>
+                                @if (user.Role == "Admin" || user.Role == "Administrator")
+                                {
+                                    <span class="badge-admin badge-danger">
+                                        <i class="bi bi-shield-fill-check"></i> Quản trị viên
+                                    </span>
+                                }
+                                else if (user.Role == "Editor")
+                                {
+                                    <span class="badge-admin badge-warning">
+                                        <i class="bi bi-pencil-fill"></i> Biên tập viên
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-admin badge-info">
+                                        <i class="bi bi-person-fill"></i> @user.Role
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <div style="display:flex;gap:6px;">
+                                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn-icon btn-warning-sport" title="Sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@user.Id"
+                                       class="btn-icon btn-danger-sport" title="Xóa"
+                                       onclick="return confirm('Xóa tài khoản «@user.Username»?')">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
 </div>

@@ -1,79 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ThaiCMS Admin</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        .sidebar { min-height: 100vh; background-color: #212529; color: white; }
-        .sidebar a { color: #adb5bd; text-decoration: none; display: block; padding: 10px 20px; }
-        .sidebar a:hover { background-color: #343a40; color: white; }
-        .sidebar .active { background-color: #0d6efd; color: white; }
-    </style>
+    <title>@ViewData["Title"] - SportZone Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <nav class="col-md-3 col-lg-2 sidebar p-0">
-                <div class="p-3 text-center border-bottom border-secondary">
-                    <h4 class="text-white">ThaiCMS Admin</h4>
-                </div>
-                <div class="mt-3">
-                    <a asp-controller="Home" asp-action="Index">
-                        <i class="bi bi-speedometer2"></i> Bảng điều khiển
-                    </a>
-                    <a asp-controller="Category" asp-action="Index">
-                        <i class="bi bi-grid"></i> Quản lý Danh mục
-                    </a>
-                    <a asp-controller="Post" asp-action="Index">
-                        <i class="bi bi-file-earmark-post"></i> Quản lý Bài viết
-                    </a>
-                    <a asp-controller="User" asp-action="Index">
-                        <i class="bi bi-people"></i> Quản lý Thành viên
-                    </a>
-                    <a asp-controller="CategoryProduct" asp-action="Index">
-                        <i class="bi bi-grid"></i> Danh mục sản phẩm 
-                    </a>
-                    <a asp-controller="Product" asp-action="Index">
-                        <i class="bi bi-box-seam"></i> Sản phẩm
-                    </a>
-                    <a asp-controller="Customer" asp-action="Index">
-                        <i class="bi bi-people"></i> Khách hàng
-                    </a>
-                    <a asp-controller="Order" asp-action="Index">
-                        <i class="bi bi-grid"></i> Đơn hàng
-                    </a>
-                    <a asp-controller="OrderDetail" asp-action="Index">
-                        <i class="bi bi-grid"></i> Đơn hàng chi tiết                    
-                    </a>
-                </div>
-            </nav>
 
-            <main class="col-md-9 col-lg-10 ms-sm-auto p-4">
-                <div class="d-flex justify-content-end border-bottom pb-2 mb-3">
-                    <ul class="nav">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <span class="nav-link text-dark">
-                                    Chào, <strong>@User.FindFirst("FullName")?.Value</strong> (@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value)
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-outline-danger btn-sm mt-1" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-                @RenderBody() 
-            </main>
+<!-- ===== SIDEBAR ===== -->
+<nav class="admin-sidebar" id="adminSidebar">
+    <!-- Top accent bar auto via ::before -->
+
+    <!-- Brand -->
+    <a href="/Home/Index" class="sidebar-brand">
+        <div class="brand-icon">🏆</div>
+        <div class="brand-text">
+            <span class="brand-name">SportZone</span>
+            <span class="brand-sub">Admin Panel</span>
+        </div>
+    </a>
+
+    <!-- Navigation -->
+    <div class="sidebar-nav">
+
+        <!-- TỔNG QUAN -->
+        <div class="sidebar-section-label">Tổng quan</div>
+        <div class="nav-item-group">
+            <a asp-controller="Home" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+                Bảng điều khiển
+            </a>
+        </div>
+
+        <!-- NỘI DUNG -->
+        <div class="sidebar-section-label">Nội dung</div>
+        <div class="nav-item-group">
+            <a asp-controller="Category" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-folder2-open"></i></span>
+                Danh mục bài viết
+            </a>
+            <a asp-controller="Post" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Post" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-newspaper"></i></span>
+                Bài viết & Tin tức
+            </a>
+        </div>
+
+        <!-- THƯƠNG MẠI -->
+        <div class="sidebar-section-label">Thương mại</div>
+        <div class="nav-item-group">
+            <a asp-controller="CategoryProduct" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "CategoryProduct" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-tags"></i></span>
+                Danh mục sản phẩm
+            </a>
+            <a asp-controller="Product" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-box-seam"></i></span>
+                Sản phẩm thể thao
+            </a>
+            <a asp-controller="Order" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Order" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-bag-check"></i></span>
+                Đơn hàng
+                <span class="nav-badge">New</span>
+            </a>
+            <a asp-controller="OrderDetail" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "OrderDetail" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-list-ul"></i></span>
+                Chi tiết đơn hàng
+            </a>
+        </div>
+
+        <!-- HỆ THỐNG -->
+        <div class="sidebar-section-label">Hệ thống</div>
+        <div class="nav-item-group">
+            <a asp-controller="Contact" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Contact" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-envelope-paper"></i></span>
+                Quản lý Liên hệ
+            </a>
+            <a asp-controller="Customer" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Customer" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-person-lines-fill"></i></span>
+                Khách hàng
+            </a>
+            <a asp-controller="User" asp-action="Index" class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" ? "active" : "")">
+                <span class="nav-icon"><i class="bi bi-shield-person"></i></span>
+                Quản trị viên
+            </a>
         </div>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <!-- User info at bottom -->
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="sidebar-user">
+            <div class="sidebar-user-info">
+                <div class="user-avatar">
+                    @(User.FindFirst("FullName")?.Value?.Substring(0, 1).ToUpper() ?? "A")
+                </div>
+                <div class="user-details">
+                    <div class="user-name">@User.FindFirst("FullName")?.Value</div>
+                    <div class="user-role">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</div>
+                </div>
+                <a class="btn-logout-sidebar" asp-controller="Account" asp-action="Logout" title="Đăng xuất">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    }
+</nav>
+
+<!-- ===== MAIN WRAPPER ===== -->
+<div class="admin-wrapper" id="adminWrapper">
+
+    <!-- TOP BAR -->
+    <header class="admin-topbar">
+        <div class="topbar-left">
+            <button class="btn-icon btn-secondary-sport" id="sidebarToggle" style="display:none;">
+                <i class="bi bi-list"></i>
+            </button>
+            <nav class="page-breadcrumb">
+                <span>SportZone</span>
+                <i class="bi bi-chevron-right"></i>
+                <span class="bc-current">@(ViewData["Title"] ?? "Bảng điều khiển")</span>
+            </nav>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-stat-pill">
+                <span class="dot"></span>
+                <span>Hệ thống hoạt động</span>
+            </div>
+            <div class="topbar-stat-pill" style="display:none;" id="topbar-user-info">
+                <i class="bi bi-person-circle" style="color:var(--primary)"></i>
+                <span id="topbar-username"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="admin-content">
+        @RenderBody()
+    </main>
+</div>
+
+<script>
+    // Active link auto-scroll into view in sidebar
+    document.querySelectorAll('.nav-link-admin.active').forEach(el => {
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+
+    // Animate stat numbers counting up
+    document.querySelectorAll('.stat-value[data-count]').forEach(el => {
+        const target = parseInt(el.getAttribute('data-count'));
+        let current = 0;
+        const step = Math.max(1, Math.floor(target / 40));
+        const timer = setInterval(() => {
+            current = Math.min(current + step, target);
+            el.textContent = current.toLocaleString('vi-VN');
+            if (current >= target) clearInterval(timer);
+        }, 25);
+    });
+
+    // Hover ripple on rows
+    document.querySelectorAll('.admin-table tbody tr').forEach((row, i) => {
+        row.style.animationDelay = (i * 0.04) + 's';
+        row.style.animation = 'fadeSlideUp 0.3s ease forwards';
+        row.style.opacity = '0';
+    });
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

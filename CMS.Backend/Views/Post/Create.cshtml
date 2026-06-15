@@ -1,70 +1,97 @@
 @model CMS.Data.Entities.Post
-
 @{
-    Layout = "_LayoutAdmin";
-    ViewData["Title"] = "Thêm bài viết mới";
+    ViewData["Title"] = "Viết bài mới";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0"><i class="bi bi-file-earmark-plus"></i> THÊM BÀI VIẾT MỚI</h4>
-        </div>
-        <div class="card-body">
-            <form asp-action="Create" method="post" enctype="multipart/form-data">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Tiêu đề bài viết:</label>
-                            <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề..." />
-                        </div>
+<div class="page-header">
+    <div class="page-title-group">
+        <h1 class="page-title">✍️ Viết Bài Mới</h1>
+        <p class="page-subtitle">Đăng tin tức thể thao mới</p>
+    </div>
+    <a asp-action="Index" class="btn-sport btn-secondary-sport">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Nội dung chi tiết:</label>
-                            <textarea asp-for="Content" class="form-control" rows="10" placeholder="Viết nội dung tại đây..."></textarea>
-                        </div>
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;">
+
+        <!-- Main content -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="brand-icon" style="width:32px;height:32px;font-size:14px;">📝</div>
+                <span class="form-card-title" style="font-size:14px;">Nội dung bài viết</span>
+            </div>
+            <div class="form-card-body">
+                <div class="form-group-admin">
+                    <label class="form-label-admin">Tiêu đề bài viết <span style="color:var(--danger)">*</span></label>
+                    <input asp-for="Title" class="form-control-admin" placeholder="Nhập tiêu đề hấp dẫn..." />
+                    <span asp-validation-for="Title" class="field-validation-error"></span>
+                </div>
+                <div class="form-group-admin">
+                    <label class="form-label-admin">Nội dung chi tiết</label>
+                    <textarea asp-for="Content" id="Content" class="form-control-admin" rows="12"
+                              placeholder="Viết nội dung bài viết tại đây..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar settings -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="form-card">
+                <div class="form-card-header" style="padding:14px 18px;">
+                    <span class="form-card-title" style="font-size:13px;">⚙️ Cài đặt bài viết</span>
+                </div>
+                <div class="form-card-body" style="padding:18px;">
+                    <div class="form-group-admin">
+                        <label class="form-label-admin">Chuyên mục <span style="color:var(--danger)">*</span></label>
+                        <select asp-for="CategoryId" class="form-control-admin" asp-items="ViewBag.CategoryList">
+                            <option value="">-- Chọn chuyên mục --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="field-validation-error"></span>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Chuyên mục:</label>
-                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryList">
-                                <option value="">-- Chọn danh mục --</option>
-                            </select>
-                        </div>
+                    <div class="form-group-admin">
+                        <label class="form-label-admin">Ngày đăng</label>
+                        <input asp-for="CreatedDate" type="date" class="form-control-admin"
+                               value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Link ảnh đại diện (URL) hoặc Upload ảnh:</label>
-                            <input asp-for="ImageUrl" class="form-control mb-2" placeholder="https://..." />
-                            <input type="file" name="uploadImage" class="form-control" accept="image/*" />
-                        </div>
+                    <div class="form-group-admin">
+                        <label class="form-label-admin">Link ảnh đại diện (URL)</label>
+                        <input asp-for="ImageUrl" class="form-control-admin" placeholder="https://..." />
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Ngày đăng:</label>
-                            <input asp-for="CreatedDate" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                        </div>
+                    <div class="form-group-admin">
+                        <label class="form-label-admin">Hoặc upload ảnh</label>
+                        <input type="file" name="uploadImage" class="form-control-admin" accept="image/*"
+                               style="padding:8px 14px;cursor:pointer;" />
+                    </div>
 
-                        <hr />
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-cloud-arrow-up"></i> Lưu và Đăng bài
-                            </button>
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Quay lại danh sách
-                            </a>
-                        </div>
+                    <div style="margin-top:8px;">
+                        <button type="submit" class="btn-sport btn-primary-sport" style="width:100%;justify-content:center;">
+                            <i class="bi bi-cloud-arrow-up"></i> Đăng bài
+                        </button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-</div>
+</form>
 
 @section Scripts {
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
         ClassicEditor
             .create(document.querySelector('#Content'))
+            .then(editor => {
+                // Custom dark mode styles for CKEditor
+                editor.editing.view.change(writer => {
+                    writer.setStyle('background', 'var(--bg-input)', editor.editing.view.document.getRoot());
+                    writer.setStyle('color', 'var(--text-primary)', editor.editing.view.document.getRoot());
+                });
+            })
             .catch(error => {
                 console.error(error);
             });
