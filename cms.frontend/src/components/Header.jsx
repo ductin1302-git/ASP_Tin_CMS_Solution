@@ -44,8 +44,15 @@ const Header = () => {
             <Search size={22} />
           </button>
           {user ? (
-            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-              <span style={{fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-dark)'}}>Xin chào, {user.fullName}</span>
+            <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+              <Link to="/profile" style={{display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)', fontWeight: '600', textDecoration: 'none', padding: '6px 12px', borderRadius: '30px', background: 'rgba(255, 107, 0, 0.1)', transition: 'all 0.3s ease'}} className="profile-badge">
+                {user.avatarUrl ? (
+                  <img src={`https://localhost:7003${user.avatarUrl}`} alt={user.fullName} style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <User size={18} />
+                )}
+                <span>{user.fullName}</span>
+              </Link>
               <button className="icon-btn" onClick={logout} title="Đăng xuất" style={{border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444'}}>
                 <LogOut size={20} />
               </button>

@@ -25,6 +25,19 @@
     </div>
 </div>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" style="background:#d1fae5;color:#065f46;padding:12px;border-radius:6px;margin-bottom:16px;">
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" style="background:#fee2e2;color:#991b1b;padding:12px;border-radius:6px;margin-bottom:16px;">
+        @TempData["Error"]
+    </div>
+}
+
 <div class="data-card">
     <div class="data-card-header">
         <div class="data-card-title">

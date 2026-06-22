@@ -4,6 +4,9 @@ using CMS.Data;
 using CMS.Data.Entities;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CMS.Backend.Controllers
 {
@@ -12,10 +15,12 @@ namespace CMS.Backend.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public CustomersController(ApplicationDbContext context)
+        public CustomersController(ApplicationDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/Customers
@@ -29,7 +34,10 @@ namespace CMS.Backend.Controllers
                     c.FullName,
                     c.Email,
                     c.Phone,
-                    c.Address
+                    c.Address,
+                    c.Gender,
+                    c.DateOfBirth,
+                    c.AvatarUrl
                     // Mật khẩu không hiển thị ở danh sách để bảo mật thông tin
                 })
                 .ToListAsync();
@@ -46,7 +54,10 @@ namespace CMS.Backend.Controllers
                     c.FullName,
                     c.Email,
                     c.Phone,
-                    c.Address
+                    c.Address,
+                    c.Gender,
+                    c.DateOfBirth,
+                    c.AvatarUrl
                 })
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -76,7 +87,10 @@ namespace CMS.Backend.Controllers
                 customer.FullName,
                 customer.Email,
                 customer.Phone,
-                customer.Address
+                customer.Address,
+                customer.Gender,
+                customer.DateOfBirth,
+                customer.AvatarUrl
             };
 
             return CreatedAtAction(nameof(GetDetail), new { id = customer.Id }, response);
@@ -106,6 +120,12 @@ namespace CMS.Backend.Controllers
             if (string.IsNullOrEmpty(customer.Password))
             {
                 customer.Password = existingCustomer.Password;
+            }
+            
+            // Giữ nguyên AvatarUrl nếu không gửi lên
+            if (string.IsNullOrEmpty(customer.AvatarUrl))
+            {
+                customer.AvatarUrl = existingCustomer.AvatarUrl;
             }
 
             _context.Entry(customer).State = EntityState.Modified;
@@ -150,6 +170,42 @@ namespace CMS.Backend.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Xóa khách hàng thành công" });
+        }
+
+        // POST: api/Customers/5/avatar
+        [HttpPost("{id}/avatar")]
+        public async Task<IActionResult> UploadAvatar(int id, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { message = "Không tìm thấy file ảnh" });
+            }
+
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null)
+            {
+                return NotFound(new { message = "Không tìm thấy khách hàng này" });
+            }
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads", "avatars");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            customer.AvatarUrl = "/uploads/avatars/" + uniqueFileName;
+            _context.Entry(customer).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Cập nhật ảnh đại diện thành công", avatarUrl = customer.AvatarUrl });
         }
     }
 }

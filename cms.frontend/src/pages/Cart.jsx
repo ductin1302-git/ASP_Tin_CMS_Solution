@@ -13,79 +13,13 @@ const Cart = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Form State
-  const [customerId, setCustomerId] = useState('');
-  const [notes, setNotes] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [orderSuccess, setOrderSuccess] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      setCustomerId(user.id.toString());
-    } else {
-      setCustomerId('');
-    }
-  }, [user]);
+  // Form State removed, using dedicated Checkout page instead.
 
   const getImageUrl = (url) => {
     if (!url) return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop';
     if (url.startsWith('http')) return url;
     return `${API_BASE_URL}${url}`;
   };
-
-  const handleCheckout = async (e) => {
-    e.preventDefault();
-    if (!customerId) {
-      alert("Vui lòng nhập Mã Khách Hàng hoặc Đăng nhập để thanh toán!");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    const orderPayload = {
-      customerId: parseInt(customerId),
-      notes: notes,
-      orderDetails: cartItems.map(item => ({
-        productId: item.id,
-        quantity: item.quantity,
-        unitPrice: item.price
-      }))
-    };
-
-    try {
-      const response = await fetch('https://localhost:7003/api/Orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderPayload)
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || result.detail || 'Có lỗi xảy ra khi thanh toán.');
-      }
-
-      setOrderSuccess(true);
-      clearCart();
-    } catch (error) {
-      alert("Lỗi đặt hàng: " + error.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (orderSuccess) {
-    return (
-      <div className="cart-page container animate-fade-in" style={{textAlign: 'center', padding: '100px 0'}}>
-        <div style={{fontSize: '4rem', color: '#10b981', marginBottom: '20px'}}>✓</div>
-        <h1 style={{marginBottom: '20px'}}>Đặt hàng thành công!</h1>
-        <p style={{marginBottom: '30px', color: '#64748b'}}>Cảm ơn bạn đã mua sắm tại V-SPORT. Chúng tôi sẽ sớm liên hệ với bạn.</p>
-        <Link to="/shop" className="btn btn-primary">Tiếp tục mua sắm</Link>
-      </div>
-    );
-  }
 
   if (cartItems.length === 0) {
     return (
@@ -145,42 +79,20 @@ const Cart = () => {
             <span>{formatPrice(getCartTotal())}</span>
           </div>
 
-          <form className="checkout-form" onSubmit={handleCheckout}>
-            <div className="form-group">
-              <label>Mã Khách Hàng (Customer ID)*</label>
-              <input 
-                type="number" 
-                required 
-                placeholder="Ví dụ: 1" 
-                value={customerId}
-                onChange={(e) => setCustomerId(e.target.value)}
-                readOnly={!!user}
-              />
-              {!user && (
-                <small style={{color: '#64748b', display: 'block', marginTop: '5px'}}>
-                  (Đăng nhập để tự động điền hoặc nhập thủ công ID Khách hàng)
-                </small>
-              )}
-            </div>
-            
-            <div className="form-group">
-              <label>Ghi chú đơn hàng</label>
-              <textarea 
-                rows="3" 
-                placeholder="Giao hàng giờ hành chính..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-              ></textarea>
-            </div>
-
+          <div style={{marginTop: '20px'}}>
             <button 
-              type="submit" 
               className="btn-checkout" 
-              disabled={isSubmitting}
+              onClick={() => {
+                if (!user) {
+                  navigate('/login', { state: { from: '/checkout', message: 'Vui lòng đăng nhập để thanh toán.' }});
+                } else {
+                  navigate('/checkout');
+                }
+              }}
             >
-              {isSubmitting ? 'Đang xử lý...' : 'Xác Nhận Đặt Hàng'} <ArrowRight size={20} style={{marginLeft: '10px'}} />
+              Tiến hành thanh toán <ArrowRight size={20} style={{marginLeft: '10px'}} />
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

@@ -39,10 +39,20 @@ const NewsPage = () => {
   if (error) return <div className="container" style={{padding: '100px 0', textAlign: 'center', color: 'red'}}>Lỗi: {error}</div>;
 
   return (
-    <div className="news-page container">
-      <div className="section-header">
-        <h1 className="section-title">Tin Tức Thể Thao</h1>
+    <>
+      {/* Banner Ưu Đãi Full Width */}
+      <div className="news-banner-full" style={{ width: '100%', overflow: 'hidden' }}>
+        <img 
+          src="/images/tintuc.png" 
+          alt="Tin Tức Thể Thao" 
+          style={{ width: '100%', height: 'auto', display: 'block' }} 
+        />
       </div>
+
+      <div className="news-page container" style={{ paddingTop: '3rem' }}>
+        <div className="section-header">
+          <h1 className="section-title">Tin Tức Thể Thao</h1>
+        </div>
       
       <div className="news-grid">
         {posts.length === 0 ? (
@@ -79,6 +89,7 @@ const NewsPage = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

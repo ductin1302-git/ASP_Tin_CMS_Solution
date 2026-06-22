@@ -216,7 +216,8 @@ namespace CMS.Backend.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Lỗi khi import file: {ex.Message}";
+                var errorMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                TempData["Error"] = $"Lỗi khi import file: {errorMsg}";
             }
 
             return RedirectToAction("Index");
