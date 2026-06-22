@@ -41,19 +41,26 @@ namespace CMS.Backend.Controllers
                 Email = model.Email,
                 Phone = model.Phone,
                 Address = model.Address,
+                Gender = model.Gender,
+                DateOfBirth = model.DateOfBirth,
                 Password = model.Password
             };
 
             _context.Customers.Add(newCustomer);
             await _context.SaveChangesAsync();
 
-            // Trả về thông tin cơ bản sau khi đăng ký thành công
+            // Trả về thông tự cơ bản sau khi đăng ký thành công
             return StatusCode(201, new { 
                 message = "Đăng ký thành công!",
                 user = new {
                     id = newCustomer.Id,
                     fullName = newCustomer.FullName,
-                    email = newCustomer.Email
+                    email = newCustomer.Email,
+                    phone = newCustomer.Phone,
+                    address = newCustomer.Address,
+                    gender = newCustomer.Gender,
+                    dateOfBirth = newCustomer.DateOfBirth,
+                    avatarUrl = newCustomer.AvatarUrl
                 }
             });
         }
@@ -84,7 +91,10 @@ namespace CMS.Backend.Controllers
                     fullName = customer.FullName,
                     email = customer.Email,
                     phone = customer.Phone,
-                    address = customer.Address
+                    address = customer.Address,
+                    gender = customer.Gender,
+                    dateOfBirth = customer.DateOfBirth,
+                    avatarUrl = customer.AvatarUrl
                 }
             });
         }
@@ -97,6 +107,8 @@ namespace CMS.Backend.Controllers
         public string Email { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
+        public string? Gender { get; set; }
+        public System.DateTime? DateOfBirth { get; set; }
         public string Password { get; set; }
     }
 

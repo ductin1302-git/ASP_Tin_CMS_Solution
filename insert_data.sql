@@ -1,4 +1,4 @@
-USE TinCMS_db;
+USE Tin_CMS;
 GO
 
 -- Xóa dữ liệu cũ

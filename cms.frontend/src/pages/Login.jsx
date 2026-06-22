@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
@@ -8,9 +8,12 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectPath = location.state?.from || '/';
+  const loginMessage = location.state?.message;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,7 +24,7 @@ const Login = () => {
       const response = await fetch('https://localhost:7003/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -30,11 +33,8 @@ const Login = () => {
         throw new Error(data.message || 'Đăng nhập thất bại.');
       }
 
-      // Lưu thông tin người dùng vào Context
       login(data.user);
-      
-      // Chuyển hướng về trang chủ
-      navigate('/');
+      navigate(redirectPath, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -50,15 +50,16 @@ const Login = () => {
           <p>Chào mừng bạn quay lại với V-SPORT</p>
         </div>
 
+        {loginMessage && !error && <div className="alert-info">{loginMessage}</div>}
         {error && <div className="alert-error">{error}</div>}
 
         <form className="auth-form" onSubmit={handleLogin}>
           <div className="form-group">
             <label>Email</label>
-            <input 
-              type="email" 
-              placeholder="Nhập email của bạn" 
-              required 
+            <input
+              type="email"
+              placeholder="Nhập email của bạn"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -66,10 +67,10 @@ const Login = () => {
 
           <div className="form-group">
             <label>Mật khẩu</label>
-            <input 
-              type="password" 
-              placeholder="Nhập mật khẩu" 
-              required 
+            <input
+              type="password"
+              placeholder="Nhập mật khẩu"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -81,7 +82,7 @@ const Login = () => {
         </form>
 
         <div className="auth-footer">
-          Chưa có tài khoản? 
+          Chưa có tài khoản?
           <Link to="/register" className="auth-link">Đăng ký ngay</Link>
         </div>
       </div>

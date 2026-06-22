@@ -1,6 +1,7 @@
 .news-page {
   padding: 4rem 20px;
   min-height: 70vh;
+  color: var(--text-light);
 }
 
 .news-grid {
@@ -10,8 +11,10 @@
 }
 
 .news-card {
-  background: white;
-  border-radius: var(--radius-md);
+  background:
+    linear-gradient(180deg, rgba(8, 28, 56, 0.92), rgba(3, 16, 34, 0.96));
+  border: 1px solid rgba(0, 200, 255, 0.16);
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
@@ -21,7 +24,7 @@
 
 .news-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 26px 70px rgba(0, 200, 255, 0.18);
 }
 
 .news-image-container {
@@ -45,7 +48,7 @@
   position: absolute;
   top: 15px;
   left: 15px;
-  background-color: var(--accent-color);
+  background: linear-gradient(135deg, var(--sport-red), var(--sport-red-hover));
   color: white;
   z-index: 2;
 }
@@ -81,10 +84,11 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex-grow: 1;
+  color: #ffffff;
 }
 
 .news-title:hover {
-  color: var(--accent-color);
+  color: var(--sport-red-hover);
 }
 
 .read-more {
@@ -92,12 +96,12 @@
   align-items: center;
   gap: 5px;
   font-weight: 600;
-  color: var(--primary-color);
+  color: var(--accent-color);
   font-size: 0.9rem;
   text-transform: uppercase;
 }
 
 .read-more:hover {
-  color: var(--accent-color);
+  color: var(--sport-red-hover);
   gap: 8px;
 }

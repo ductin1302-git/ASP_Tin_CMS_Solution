@@ -33,7 +33,10 @@ namespace CMS.Backend.Controllers
                     o.CustomerId,
                     CustomerName = o.Customer != null ? o.Customer.FullName : null,
                     o.Status,
-                    o.Notes
+                    o.Notes,
+                    o.PaymentMethod,
+                    o.IsPaid,
+                    o.DeliveryAddress
                 })
                 .ToListAsync();
 
@@ -58,6 +61,9 @@ namespace CMS.Backend.Controllers
                     CustomerAddress = o.Customer != null ? o.Customer.Address : null,
                     o.Status,
                     o.Notes,
+                    o.PaymentMethod,
+                    o.IsPaid,
+                    o.DeliveryAddress,
                     OrderDetails = o.OrderDetails.Select(od => new {
                         od.Id,
                         od.ProductId,
@@ -77,6 +83,39 @@ namespace CMS.Backend.Controllers
             return Ok(order);
         }
 
+        // GET: api/Orders/Customer/5
+        [HttpGet("Customer/{customerId}")]
+        public async Task<IActionResult> GetByCustomer(int customerId)
+        {
+            var orders = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .Where(o => o.CustomerId == customerId)
+                .OrderByDescending(o => o.OrderDate)
+                .Select(o => new {
+                    o.Id,
+                    o.OrderDate,
+                    o.Status,
+                    o.Notes,
+                    o.PaymentMethod,
+                    o.IsPaid,
+                    o.DeliveryAddress,
+                    TotalAmount = o.OrderDetails.Sum(od => od.Quantity * od.UnitPrice),
+                    OrderDetails = o.OrderDetails.Select(od => new {
+                        od.Id,
+                        od.ProductId,
+                        ProductName = od.Product != null ? od.Product.Name : null,
+                        ProductImage = od.Product != null ? od.Product.ImageUrl : null,
+                        od.Quantity,
+                        od.UnitPrice,
+                        TotalPrice = od.Quantity * od.UnitPrice
+                    })
+                })
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+
         // POST: api/Orders
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] OrderInputDTO input)
@@ -94,7 +133,10 @@ namespace CMS.Backend.Controllers
                     OrderDate = DateTime.Now,
                     CustomerId = input.CustomerId,
                     Status = 0, // 0: Mặc định đơn hàng mới ở trạng thái "Chờ xử lý"
-                    Notes = input.Notes
+                    Notes = input.Notes,
+                    PaymentMethod = string.IsNullOrEmpty(input.PaymentMethod) ? "COD" : input.PaymentMethod,
+                    IsPaid = input.IsPaid,
+                    DeliveryAddress = input.DeliveryAddress
                 };
 
                 _context.Orders.Add(newOrder);
@@ -103,18 +145,20 @@ namespace CMS.Backend.Controllers
                 foreach (var detail in input.OrderDetails)
                 {
                     var product = await _context.Products.FindAsync(detail.ProductId);
-                    if (product == null)
+                    if (product == null || product.IsDeleted)
                     {
-                        throw new Exception($"Không tìm thấy sản phẩm có ID: {detail.ProductId}");
+                        await transaction.RollbackAsync();
+                        return BadRequest(new { message = $"Sản phẩm '{detail.ProductId}' không tồn tại hoặc đã bị xóa. Vui lòng xóa khỏi giỏ hàng." });
                     }
 
                     if (product.StockQuantity < detail.Quantity)
                     {
-                        throw new Exception($"Sản phẩm '{product.Name}' không đủ số lượng tồn kho (Chỉ còn {product.StockQuantity}).");
+                        await transaction.RollbackAsync();
+                        return BadRequest(new { message = $"Sản phẩm '{product.Name}' không đủ số lượng tồn kho (Chỉ còn {product.StockQuantity})." });
                     }
 
                     product.StockQuantity -= detail.Quantity;
-                    _context.Products.Update(product);
+                    // Không cần _context.Products.Update(product); vì product đã được theo dõi (tracked) bởi _context
 
                     var newDetail = new OrderDetail
                     {
@@ -137,7 +181,14 @@ namespace CMS.Backend.Controllers
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, new { message = "Lỗi xử lý tạo đơn hàng ngầm", detail = ex.Message });
+                Console.WriteLine("================ ERROR CREATE ORDER ================");
+                Console.WriteLine(ex.ToString());
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("INNER: " + ex.InnerException.ToString());
+                }
+                Console.WriteLine("====================================================");
+                return StatusCode(500, new { message = "Lỗi xử lý tạo đơn hàng ngầm", detail = ex.InnerException?.Message ?? ex.Message });
             }
         }
 
@@ -211,6 +262,9 @@ namespace CMS.Backend.Controllers
     {
         public int CustomerId { get; set; }
         public string? Notes { get; set; }
+        public string? PaymentMethod { get; set; }
+        public bool IsPaid { get; set; }
+        public string? DeliveryAddress { get; set; }
         public List<OrderDetailInputDTO> OrderDetails { get; set; }
     }
 
