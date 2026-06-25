@@ -1,4 +1,8 @@
--- Xóa dữ liệu cũ nếu muốn làm mới (Bỏ comment các dòng DELETE nếu cần thiết)
+-- Dữ liệu mẫu tiếng Việt chuẩn cho website thể thao.
+-- Nếu muốn làm mới database, bỏ comment các dòng DELETE và chạy theo đúng thứ tự khóa ngoại.
+
+-- DELETE FROM [dbo].[OrderDetails];
+-- DELETE FROM [dbo].[Orders];
 -- DELETE FROM [dbo].[Posts];
 -- DELETE FROM [dbo].[Products];
 -- DELETE FROM [dbo].[Categories];
@@ -6,55 +10,61 @@
 -- DELETE FROM [dbo].[Customers];
 -- DELETE FROM [dbo].[Users];
 
--- Ảnh 1: Dữ liệu bảng Categories
 SET IDENTITY_INSERT [dbo].[Categories] ON;
-INSERT INTO [dbo].[Categories] ([Id], [Name], [Description]) VALUES 
-(1, N'Tin Công Nghệ', N'Cập nhật xu hướng AI, IoT và lập trình.'),
-(2, N'Đời sống du lịch', N'Kinh nghiệm phượt và các điểm đến hấp dẫn.'),
-(3, N'Sức khỏe Thể thao', N'Các bài tập và chế độ ăn uống lành mạnh.'),
-(4, N'Giáo dục Kỹ năng', N'Phương pháp học tập và kỹ năng mềm .');
+INSERT INTO [dbo].[Categories] ([Id], [Name], [Description]) VALUES
+(1, N'Tin bóng đá', N'Cập nhật lịch thi đấu, kết quả, chuyển nhượng và câu chuyện bên lề sân cỏ.'),
+(2, N'Tin chạy bộ', N'Kinh nghiệm chạy bộ, chọn giày, giáo án và các giải chạy phong trào.'),
+(3, N'Sức khỏe thể thao', N'Kiến thức phòng tránh chấn thương, phục hồi và duy trì thể lực.'),
+(4, N'Dinh dưỡng thể thao', N'Gợi ý ăn uống, bổ sung năng lượng và phục hồi sau tập luyện.'),
+(5, N'Hướng dẫn tập luyện', N'Bài tập gym, yoga, bóng rổ, cầu lông và kỹ thuật tập đúng cách.');
 SET IDENTITY_INSERT [dbo].[Categories] OFF;
 
--- Ảnh 2: Dữ liệu bảng CategoriesProducts
 SET IDENTITY_INSERT [dbo].[CategoriesProducts] ON;
-INSERT INTO [dbo].[CategoriesProducts] ([Id], [Name], [Description]) VALUES 
-(1, N'Điện tử', N'Sản phẩm công nghệ, thiết bị điện tử'),
-(2, N'Thời trang', N'Quần áo, phụ kiện thời trang'),
-(3, N'Gia dụng', N'Sản phẩm dùng trong gia đình');
+INSERT INTO [dbo].[CategoriesProducts] ([Id], [Name], [Description]) VALUES
+(1, N'Giày thể thao', N'Giày chạy bộ, giày đá bóng, giày bóng rổ và sneaker tập luyện.'),
+(2, N'Trang phục thể thao', N'Áo, quần, bộ thi đấu và đồ tập thoáng khí cho nam nữ.'),
+(3, N'Phụ kiện thể thao', N'Balo, bình nước, găng tay, bóng và phụ kiện hỗ trợ tập luyện.');
 SET IDENTITY_INSERT [dbo].[CategoriesProducts] OFF;
 
--- Ảnh 3: Dữ liệu bảng Customers
 SET IDENTITY_INSERT [dbo].[Customers] ON;
-INSERT INTO [dbo].[Customers] ([Id], [FullName], [Email], [Phone], [Address], [Password]) VALUES 
-(1, N'Nguyễn Văn An', N'an.nguyen@gmail.com', N'0912345678', N'123 Nguyễn Trãi, Quận 5, TP.HCM', N'password123'),
-(2, N'Trần Thị Bình', N'binh.tran@yahoo.com', N'0987654321', N'456 Lê Lợi, Quận 1, TP.HCM', N'password123'),
-(3, N'Lê Hoàng Cường', N'cuong.le@hotmail.com', N'0909090909', N'789 Cách Mạng Tháng 8, Quận 10, TP.HCM', N'password123');
+INSERT INTO [dbo].[Customers] ([Id], [FullName], [Email], [Phone], [Address], [Gender], [Password]) VALUES
+(1, N'Khách hàng thể thao 1', N'kh1@gmail.com', N'0909123456', N'TP. Hồ Chí Minh', N'Nam', N'123456'),
+(2, N'Khách hàng thể thao 2', N'kh2@gmail.com', N'0909654321', N'Hà Nội', N'Nữ', N'123456');
 SET IDENTITY_INSERT [dbo].[Customers] OFF;
 
--- Ảnh 4: Dữ liệu bảng Posts
 SET IDENTITY_INSERT [dbo].[Posts] ON;
-INSERT INTO [dbo].[Posts] ([Id], [Title], [Content], [ImageUrl], [CreatedDate], [CategoryId]) VALUES 
-(1, N'Lộ trình học ASP.NET', N'Hướng dẫn chi tiết cho người mới bắt đầu...', N'https://bizweb.dktcdn.net/thumb/large/100/472/304/pro...', '2026-04-01 00:00:00', 1),
-(2, N'Top 5 bãi biển đẹp', N'Những địa điểm không thể bỏ qua mùa hè này...', N'https://bizweb.dktcdn.net/thumb/large/100/472/304/pro...', '2026-04-02 00:00:00', 3),
-(3, N'Chạy bộ đúng cách', N'Lợi ích tuyệt vời của việc chạy bộ mỗi sáng...', N'https://bizweb.dktcdn.net/thumb/large/100/472/304/pro...', '2026-04-03 00:00:00', 3),
-(4, N'AI và tương lai', N'Trí tuệ nhân tạo đang thay đổi cuộc sống...', N'https://bizweb.dktcdn.net/thumb/large/100/472/304/pro...', '2026-04-04 00:00:00', 1),
-(5, N'Kỹ năng Teamwork', N'Cách phối hợp hiệu quả trong nhóm đồ án...', N'https://bizweb.dktcdn.net/thumb/large/100/472/304/pro...', '2026-04-05 00:00:00', 4),
-(6, N'Xu Hướng Phát Triển Web App Với ASP.NET Core & N...', N'<p>Trong năm 2026, sự kết hợp giữa hiệu năng mạ...', N'https://images.unsplash.com/photo-1555066931-436...', '2026-05-22 00:00:00', 1);
+INSERT INTO [dbo].[Posts] ([Id], [Title], [Content], [ImageUrl], [CreatedDate], [CategoryId]) VALUES
+(1, N'5 nguyên tắc giúp chạy bộ bền hơn mỗi tuần', N'Chạy bộ hiệu quả không bắt đầu bằng tốc độ cao mà bằng sự đều đặn. Người mới nên tăng quãng đường từ từ, khởi động kỹ, giữ nhịp thở ổn định và dành ít nhất một ngày nghỉ để cơ thể phục hồi.', N'/img/run.jpg', '2026-06-01', 2),
+(2, N'Cách chọn giày đá bóng sân cỏ nhân tạo', N'Với sân cỏ nhân tạo, đế TF là lựa chọn an toàn vì có nhiều đinh nhỏ giúp bám sân tốt và giảm trượt. Người chơi nên ưu tiên form ôm chân vừa phải, phần upper mềm và trọng lượng nhẹ.', N'/img/football-shoes.jpg', '2026-06-02', 1),
+(3, N'Chạy bộ đúng cách để hạn chế chấn thương', N'Tư thế chạy nên giữ thân người thẳng tự nhiên, mắt nhìn về trước, vai thả lỏng và tiếp đất nhẹ dưới trọng tâm cơ thể. Sau buổi chạy cần giãn cơ bắp chân, đùi trước, đùi sau.', N'/img/run.jpg', '2026-06-03', 3),
+(4, N'Dinh dưỡng trước và sau buổi tập gym', N'Trước buổi tập khoảng 60 đến 90 phút, bạn có thể ăn nhẹ với tinh bột dễ tiêu và một ít protein. Sau buổi tập, cơ thể cần được bù nước, bổ sung protein và carbohydrate.', N'/img/sports-nutrition.jpg', '2026-06-04', 4),
+(5, N'Bài tập tại nhà giúp tăng sức bền cho người bận rộn', N'Chỉ với 20 phút mỗi ngày, bạn có thể kết hợp squat, plank, chống đẩy và jumping jack để cải thiện sức bền. Hãy tập theo vòng và tăng dần số lần lặp.', N'/img/home-workout.jpg', '2026-06-05', 5);
 SET IDENTITY_INSERT [dbo].[Posts] OFF;
 
--- Ảnh 6 (Mới thêm): Dữ liệu bảng Products
 SET IDENTITY_INSERT [dbo].[Products] ON;
-INSERT INTO [dbo].[Products] ([Id], [Name], [Description], [Price], [StockQuantity], [ImageUrl], [CategoryProductId]) VALUES 
-(8, N'Laptop Dell', N'Laptop văn phòng', 15000000.00, 10, N'/img/laptop.jpg', 1),
-(9, N'Bàn phím cơ', N'Bàn phím gaming', 800000.00, 20, N'/img/keyboard.jpg', 2);
+INSERT INTO [dbo].[Products] ([Id], [Name], [Description], [Price], [StockQuantity], [ImageUrl], [CategoryProductId], [SalePrice], [IsNew], [IsBestSeller], [IsPromo], [IsDeleted]) VALUES
+(1, N'Giày chạy bộ Nike Air Zoom Pegasus 40', N'Giày chạy bộ đệm êm, thoáng khí, phù hợp tập luyện hằng ngày và chạy cự ly trung bình.', 3290000, 50, N'/uploads/fc314242-0f19-4e86-94ba-391a1282f9bb.jfif', 1, 2990000, 1, 1, 1, 0),
+(2, N'Áo bóng đá đội tuyển Việt Nam 2026', N'Áo thi đấu chất vải thoáng mát, thấm hút mồ hôi, phù hợp đá bóng và cổ vũ thể thao.', 350000, 150, N'/uploads/950411f2-23e5-44cf-8813-39dc27248693.jpg', 2, 299000, 1, 1, 1, 0),
+(3, N'Balo thể thao Adidas Classic', N'Balo rộng rãi, có ngăn đựng giày riêng và ngăn phụ kiện tập luyện.', 850000, 60, N'/uploads/7798a7a1-215a-46b1-9d02-8b1349c9dac9.webp', 3, NULL, 0, 0, 1, 0);
 SET IDENTITY_INSERT [dbo].[Products] OFF;
 
--- Ảnh 5: Dữ liệu bảng Users
+SET IDENTITY_INSERT [dbo].[Orders] ON;
+INSERT INTO [dbo].[Orders] ([Id], [OrderDate], [CustomerId], [Status], [Notes], [DeliveryAddress], [PaymentMethod], [IsPaid]) VALUES
+(1, GETDATE(), 1, 1, N'Giao hàng giờ hành chính', N'TP. Hồ Chí Minh', N'COD', 0),
+(2, GETDATE(), 2, 0, N'Gọi trước khi giao', N'Hà Nội', N'COD', 0);
+SET IDENTITY_INSERT [dbo].[Orders] OFF;
+
+SET IDENTITY_INSERT [dbo].[OrderDetails] ON;
+INSERT INTO [dbo].[OrderDetails] ([Id], [OrderId], [ProductId], [Quantity], [UnitPrice]) VALUES
+(1, 1, 1, 1, 3290000),
+(2, 2, 2, 2, 350000);
+SET IDENTITY_INSERT [dbo].[OrderDetails] OFF;
+
 SET IDENTITY_INSERT [dbo].[Users] ON;
-INSERT INTO [dbo].[Users] ([Id], [Username], [PasswordHash], [FullName], [Role]) VALUES 
+INSERT INTO [dbo].[Users] ([Id], [Username], [PasswordHash], [FullName], [Role]) VALUES
 (1, N'admin', N'123456', N'Quản trị viên hệ thống', N'Admin'),
-(2, N'thai_gv', N'thai1969', N'Nguyễn Cao Thắng', N'Editor'),
-(3, N'sv_01', N'student1', N'Nguyễn Văn A', N'User'),
-(4, N'sv_02', N'student2', N'Trần Thị B', N'User'),
-(5, N'moderator', N'mod789', N'Lê Văn C', N'Moderator');
+(2, N'thai_gv', N'thai1969', N'Nguyễn Cao Thái', N'Editor'),
+(3, N'sv_01', N'student1', N'Nguyễn Văn An', N'User'),
+(4, N'sv_02', N'student2', N'Trần Thị Bình', N'User'),
+(5, N'moderator', N'mod789', N'Lê Văn Cường', N'Moderator');
 SET IDENTITY_INSERT [dbo].[Users] OFF;

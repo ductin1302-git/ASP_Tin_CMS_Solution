@@ -49,11 +49,22 @@ namespace CMS.Backend.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Customer model)
+        public IActionResult Edit(Customer model, string NewPassword)
         {
             if (ModelState.IsValid)
             {
-                _context.Customers.Update(model);
+                var customer = _context.Customers.FirstOrDefault(c => c.Id == model.Id);
+                if (customer == null) return NotFound();
+
+                customer.FullName = model.FullName;
+                customer.Email = model.Email;
+                customer.Phone = model.Phone;
+                customer.Address = model.Address;
+                if (!string.IsNullOrWhiteSpace(NewPassword))
+                {
+                    customer.Password = NewPassword;
+                }
+
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }

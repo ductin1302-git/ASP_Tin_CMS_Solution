@@ -1,4 +1,6 @@
-@model IEnumerable<CMS.Data.Entities.Product>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<CMS.Data.Entities.Product>
 @{
     ViewData["Title"] = "Sản phẩm thể thao";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -43,7 +45,7 @@
         <div class="data-card-title">
             <span class="title-icon"><i class="bi bi-box-seam"></i></span>
             Danh sách sản phẩm
-            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.Count() sản phẩm</span>
+            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.TotalItemCount sản phẩm</span>
         </div>
     </div>
 
@@ -132,6 +134,12 @@
                     }
                 </tbody>
             </table>
+        </div>
+        <div class="pagination-container" style="margin-top:20px; display:flex; justify-content:center;">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" }
+            })
         </div>
     }
 </div>

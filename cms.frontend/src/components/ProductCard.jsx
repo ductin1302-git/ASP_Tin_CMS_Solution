@@ -4,6 +4,7 @@ import { Package, ShoppingCart } from 'lucide-react';
 import { formatPrice } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import './ProductCard.css';
 
 const API_BASE_URL = 'https://localhost:7003';
@@ -13,6 +14,7 @@ const ProductCard = ({ product }) => {
   const location = useLocation();
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const { showToast, showCartToast } = useToast();
 
   const getImageUrl = (url) => {
     if (!url) return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop';
@@ -38,12 +40,16 @@ const ProductCard = ({ product }) => {
     }
 
     if (stockQuantity <= 0) {
-      alert('San pham nay hien da het hang.');
+      showToast({
+        type: 'error',
+        title: 'Sản phẩm đã hết hàng',
+        message: product.name,
+      });
       return;
     }
 
     addToCart(product, 1);
-    alert(`Da them "${product.name}" vao gio hang.`);
+    showCartToast(product.name, 1);
   };
 
   return (

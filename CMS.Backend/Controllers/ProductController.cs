@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OfficeOpenXml;
 using System.Collections.Generic;
+using X.PagedList;
+
 namespace CMS.Backend.Controllers
 {
     [Authorize]
@@ -22,10 +24,12 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? page)
         {
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
             // Chỉ hiển thị các sản phẩm chưa bị xóa tạm
-            var data = _context.Products.Include(p => p.CategoryProduct).Where(p => !p.IsDeleted).ToList(); 
+            var data = _context.Products.Include(p => p.CategoryProduct).Where(p => !p.IsDeleted).OrderByDescending(p => p.Id).ToPagedList(pageNumber, pageSize); 
             return View(data);
         }
 
@@ -72,6 +76,9 @@ namespace CMS.Backend.Controllers
         [HttpPost]
         public IActionResult Edit(Product model, IFormFile uploadImage)
         {
+            var product = _context.Products.FirstOrDefault(p => p.Id == model.Id);
+            if (product == null) return NotFound();
+
             if (uploadImage != null && uploadImage.Length > 0)
             {
                 string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
@@ -84,18 +91,15 @@ namespace CMS.Backend.Controllers
                 {
                     uploadImage.CopyTo(stream);
                 }
-                model.ImageUrl = "/uploads/" + fileName;
-            }
-            else
-            {
-                var oldProduct = _context.Products.AsNoTracking().FirstOrDefault(p => p.Id == model.Id);
-                if (oldProduct != null && string.IsNullOrEmpty(model.ImageUrl))
-                {
-                    model.ImageUrl = oldProduct.ImageUrl;
-                }
+                product.ImageUrl = "/uploads/" + fileName;
             }
 
-            _context.Products.Update(model);
+            product.Name = model.Name;
+            product.Description = model.Description;
+            product.Price = model.Price;
+            product.StockQuantity = model.StockQuantity;
+            product.CategoryProductId = model.CategoryProductId;
+
             _context.SaveChanges();
             return RedirectToAction("Index");
         }

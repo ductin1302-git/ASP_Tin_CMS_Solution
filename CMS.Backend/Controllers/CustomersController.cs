@@ -98,7 +98,7 @@ namespace CMS.Backend.Controllers
 
         // PUT: api/Customers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Customer customer)
+        public async Task<IActionResult> Update(int id, [FromBody] CustomerUpdateDTO customer)
         {
             if (id != customer.Id)
             {
@@ -111,24 +111,29 @@ namespace CMS.Backend.Controllers
             }
 
             // Lấy thực thể hiện tại trong DB để nếu ko gửi mật khẩu mới thì giữ lại mật khẩu cũ
-            var existingCustomer = await _context.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+            var existingCustomer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
             if (existingCustomer == null)
             {
                 return NotFound(new { message = "Không tìm thấy khách hàng này để cập nhật" });
             }
 
-            if (string.IsNullOrEmpty(customer.Password))
+            existingCustomer.FullName = customer.FullName;
+            existingCustomer.Email = customer.Email;
+            existingCustomer.Phone = customer.Phone;
+            existingCustomer.Address = customer.Address;
+            existingCustomer.Gender = customer.Gender;
+            existingCustomer.DateOfBirth = customer.DateOfBirth;
+
+            if (!string.IsNullOrWhiteSpace(customer.Password))
             {
-                customer.Password = existingCustomer.Password;
+                existingCustomer.Password = customer.Password;
             }
             
             // Giữ nguyên AvatarUrl nếu không gửi lên
-            if (string.IsNullOrEmpty(customer.AvatarUrl))
+            if (!string.IsNullOrWhiteSpace(customer.AvatarUrl))
             {
-                customer.AvatarUrl = existingCustomer.AvatarUrl;
+                existingCustomer.AvatarUrl = customer.AvatarUrl;
             }
-
-            _context.Entry(customer).State = EntityState.Modified;
 
             try
             {
@@ -207,5 +212,18 @@ namespace CMS.Backend.Controllers
 
             return Ok(new { message = "Cập nhật ảnh đại diện thành công", avatarUrl = customer.AvatarUrl });
         }
+    }
+
+    public class CustomerUpdateDTO
+    {
+        public int Id { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Phone { get; set; }
+        public string? Address { get; set; }
+        public string? Gender { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? AvatarUrl { get; set; }
+        public string? Password { get; set; }
     }
 }

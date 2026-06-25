@@ -66,7 +66,11 @@ namespace CMS.Backend.Controllers
         public IActionResult Edit(Category model)
         {
             // Lệnh cập nhật đối tượng vào bộ nhớ tạm
-            _context.Categories.Update(model);
+            var category = _context.Categories.FirstOrDefault(c => c.Id == model.Id);
+            if (category == null) return NotFound();
+
+            category.Name = model.Name;
+            category.Description = model.Description;
 
             // Lưu thay đổi thực sự xuống SQL Server 
             _context.SaveChanges();

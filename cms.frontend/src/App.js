@@ -11,6 +11,7 @@ import Categories from './pages/Categories';
 import Cart from './pages/Cart';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import './index.css';
 
 import Login from './pages/Login';
@@ -24,7 +25,8 @@ import Checkout from './pages/Checkout';
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
+      <ToastProvider>
+        <CartProvider>
         <Router>
           <div className="App">
             <Header />
@@ -49,7 +51,8 @@ function App() {
           <Footer />
         </div>
       </Router>
-    </CartProvider>
+        </CartProvider>
+      </ToastProvider>
     </AuthProvider>
   );
 }
