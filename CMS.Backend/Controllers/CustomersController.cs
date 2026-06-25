@@ -4,6 +4,9 @@ using CMS.Data;
 using CMS.Data.Entities;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace CMS.Backend.Controllers
 {
@@ -12,10 +15,12 @@ namespace CMS.Backend.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public CustomersController(ApplicationDbContext context)
+        public CustomersController(ApplicationDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/Customers
@@ -29,7 +34,10 @@ namespace CMS.Backend.Controllers
                     c.FullName,
                     c.Email,
                     c.Phone,
-                    c.Address
+                    c.Address,
+                    c.Gender,
+                    c.DateOfBirth,
+                    c.AvatarUrl
                     // Mật khẩu không hiển thị ở danh sách để bảo mật thông tin
                 })
                 .ToListAsync();
@@ -46,7 +54,10 @@ namespace CMS.Backend.Controllers
                     c.FullName,
                     c.Email,
                     c.Phone,
-                    c.Address
+                    c.Address,
+                    c.Gender,
+                    c.DateOfBirth,
+                    c.AvatarUrl
                 })
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -76,7 +87,10 @@ namespace CMS.Backend.Controllers
                 customer.FullName,
                 customer.Email,
                 customer.Phone,
-                customer.Address
+                customer.Address,
+                customer.Gender,
+                customer.DateOfBirth,
+                customer.AvatarUrl
             };
 
             return CreatedAtAction(nameof(GetDetail), new { id = customer.Id }, response);
@@ -84,7 +98,7 @@ namespace CMS.Backend.Controllers
 
         // PUT: api/Customers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Customer customer)
+        public async Task<IActionResult> Update(int id, [FromBody] CustomerUpdateDTO customer)
         {
             if (id != customer.Id)
             {
@@ -97,18 +111,29 @@ namespace CMS.Backend.Controllers
             }
 
             // Lấy thực thể hiện tại trong DB để nếu ko gửi mật khẩu mới thì giữ lại mật khẩu cũ
-            var existingCustomer = await _context.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+            var existingCustomer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
             if (existingCustomer == null)
             {
                 return NotFound(new { message = "Không tìm thấy khách hàng này để cập nhật" });
             }
 
-            if (string.IsNullOrEmpty(customer.Password))
-            {
-                customer.Password = existingCustomer.Password;
-            }
+            existingCustomer.FullName = customer.FullName;
+            existingCustomer.Email = customer.Email;
+            existingCustomer.Phone = customer.Phone;
+            existingCustomer.Address = customer.Address;
+            existingCustomer.Gender = customer.Gender;
+            existingCustomer.DateOfBirth = customer.DateOfBirth;
 
-            _context.Entry(customer).State = EntityState.Modified;
+            if (!string.IsNullOrWhiteSpace(customer.Password))
+            {
+                existingCustomer.Password = customer.Password;
+            }
+            
+            // Giữ nguyên AvatarUrl nếu không gửi lên
+            if (!string.IsNullOrWhiteSpace(customer.AvatarUrl))
+            {
+                existingCustomer.AvatarUrl = customer.AvatarUrl;
+            }
 
             try
             {
@@ -151,5 +176,54 @@ namespace CMS.Backend.Controllers
 
             return Ok(new { message = "Xóa khách hàng thành công" });
         }
+
+        // POST: api/Customers/5/avatar
+        [HttpPost("{id}/avatar")]
+        public async Task<IActionResult> UploadAvatar(int id, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { message = "Không tìm thấy file ảnh" });
+            }
+
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null)
+            {
+                return NotFound(new { message = "Không tìm thấy khách hàng này" });
+            }
+
+            var uploadsFolder = Path.Combine(_env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads", "avatars");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            customer.AvatarUrl = "/uploads/avatars/" + uniqueFileName;
+            _context.Entry(customer).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Cập nhật ảnh đại diện thành công", avatarUrl = customer.AvatarUrl });
+        }
+    }
+
+    public class CustomerUpdateDTO
+    {
+        public int Id { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Phone { get; set; }
+        public string? Address { get; set; }
+        public string? Gender { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? AvatarUrl { get; set; }
+        public string? Password { get; set; }
     }
 }

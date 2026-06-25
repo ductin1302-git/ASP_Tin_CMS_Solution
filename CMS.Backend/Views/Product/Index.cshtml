@@ -1,4 +1,6 @@
-@model IEnumerable<CMS.Data.Entities.Product>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<CMS.Data.Entities.Product>
 @{
     ViewData["Title"] = "Sản phẩm thể thao";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -25,12 +27,25 @@
     </div>
 </div>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success" style="background:#d1fae5;color:#065f46;padding:12px;border-radius:6px;margin-bottom:16px;">
+        @TempData["Success"]
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" style="background:#fee2e2;color:#991b1b;padding:12px;border-radius:6px;margin-bottom:16px;">
+        @TempData["Error"]
+    </div>
+}
+
 <div class="data-card">
     <div class="data-card-header">
         <div class="data-card-title">
             <span class="title-icon"><i class="bi bi-box-seam"></i></span>
             Danh sách sản phẩm
-            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.Count() sản phẩm</span>
+            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.TotalItemCount sản phẩm</span>
         </div>
     </div>
 
@@ -119,6 +134,12 @@
                     }
                 </tbody>
             </table>
+        </div>
+        <div class="pagination-container" style="margin-top:20px; display:flex; justify-content:center;">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions {
+                LiElementClasses = new string[] { "page-item" },
+                PageClasses = new string[] { "page-link" }
+            })
         </div>
     }
 </div>

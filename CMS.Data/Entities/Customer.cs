@@ -13,6 +13,7 @@
 // - public string Password { get; set; }: Lưu mật khẩu thô theo yêu cầu tối giản bài tập
 // - public virtual ICollection<Order>? Orders: Mối quan hệ 1-N (Một khách hàng có lịch sử chứa nhiều đơn hàng Orders khác nhau)
 
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CMS.Data.Entities
@@ -33,6 +34,12 @@ namespace CMS.Data.Entities
         public string? Phone { get; set; } // Số điện thoại tùy chọn
 
         public string? Address { get; set; } // Địa chỉ giao hàng tùy chọn
+
+        public string? Gender { get; set; } // Giới tính (Nam, Nữ, Khác)
+
+        public DateTime? DateOfBirth { get; set; } // Ngày sinh
+
+        public string? AvatarUrl { get; set; } // Link ảnh đại diện
 
         [Required]
         public string Password { get; set; } // Lưu mật khẩu thô tối giản

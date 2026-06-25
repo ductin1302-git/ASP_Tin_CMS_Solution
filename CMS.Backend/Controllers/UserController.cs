@@ -62,13 +62,18 @@ namespace CMS.Backend.Controllers
         public IActionResult Edit(User model, string NewPassword)
         {
             // 1. Tìm User gốc trong Database để lấy lại mật khẩu cũ nếu cần
-            var existingUser = _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == model.Id);
+            var existingUser = _context.Users.FirstOrDefault(u => u.Id == model.Id);
             
             if (existingUser == null) return NotFound();
+
+            existingUser.Username = model.Username;
+            existingUser.FullName = model.FullName;
+            existingUser.Role = model.Role;
 
             // 2. Xử lý mật khẩu: Nếu nhập mới thì lấy cái mới, nếu trống thì lấy cái cũ
             if (!string.IsNullOrEmpty(NewPassword))
             {
+                existingUser.PasswordHash = NewPassword;
                 model.PasswordHash = NewPassword; // Sau này sẽ mã hóa tại đây
             }
             else
@@ -77,7 +82,6 @@ namespace CMS.Backend.Controllers
             }
 
             // 3. Cập nhật vào Database
-            _context.Users.Update(model);
             _context.SaveChanges();
 
             return RedirectToAction("Index");

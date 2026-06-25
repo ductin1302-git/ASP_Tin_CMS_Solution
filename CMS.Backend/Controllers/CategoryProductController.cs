@@ -53,7 +53,14 @@ namespace CMS.Backend.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.CategoriesProducts.Update(model);
+                var categoryProduct = _context.CategoriesProducts.FirstOrDefault(c => c.Id == model.Id);
+                if (categoryProduct == null) return NotFound();
+
+                categoryProduct.Name = model.Name;
+                categoryProduct.Description = model.Description;
+                categoryProduct.ImageUrl = model.ImageUrl;
+                categoryProduct.ParentId = model.ParentId;
+
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }

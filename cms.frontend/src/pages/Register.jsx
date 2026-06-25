@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import './Auth.css';
 
 const Register = () => {
@@ -9,14 +10,17 @@ const Register = () => {
     email: '',
     phone: '',
     address: '',
+    gender: 'Nam',
+    dateOfBirth: '',
     password: '',
     confirmPassword: ''
   });
-  
+
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -46,6 +50,8 @@ const Register = () => {
           email: formData.email,
           phone: formData.phone,
           address: formData.address,
+          gender: formData.gender,
+          dateOfBirth: formData.dateOfBirth ? formData.dateOfBirth : null,
           password: formData.password
         })
       });
@@ -56,10 +62,12 @@ const Register = () => {
         throw new Error(data.message || 'Đăng ký thất bại. Vui lòng thử lại.');
       }
 
-      // Đăng ký xong thì tự động đăng nhập luôn
       login(data.user);
-      
-      alert('Đăng ký thành công! Chào mừng đến với V-SPORT.');
+      showToast({
+        type: 'success',
+        title: 'Đăng ký thành công',
+        message: 'Chào mừng bạn đến với V-SPORT.',
+      });
       navigate('/');
     } catch (err) {
       setError(err.message);
@@ -70,22 +78,22 @@ const Register = () => {
 
   return (
     <div className="auth-page animate-fade-in">
-      <div className="auth-container" style={{maxWidth: '550px'}}>
+      <div className="auth-container auth-container-wide">
         <div className="auth-header">
           <h1>Đăng Ký Tài Khoản</h1>
-          <p>Trở thành thành viên của V-SPORT ngay hôm nay</p>
+          <p>Tạo tài khoản V-SPORT để mua hàng nhanh và nhận ưu đãi thành viên.</p>
         </div>
 
         {error && <div className="alert-error">{error}</div>}
 
         <form className="auth-form" onSubmit={handleRegister}>
           <div className="form-group">
-            <label>Họ và Tên *</label>
-            <input 
-              type="text" 
+            <label>Họ và tên *</label>
+            <input
+              type="text"
               name="fullName"
-              placeholder="Nhập họ và tên đầy đủ" 
-              required 
+              placeholder="Nhập họ và tên đầy đủ"
+              required
               value={formData.fullName}
               onChange={handleChange}
             />
@@ -93,11 +101,11 @@ const Register = () => {
 
           <div className="form-group">
             <label>Email *</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               name="email"
-              placeholder="Nhập địa chỉ email" 
-              required 
+              placeholder="Nhập địa chỉ email"
+              required
               value={formData.email}
               onChange={handleChange}
             />
@@ -105,47 +113,68 @@ const Register = () => {
 
           <div className="form-group">
             <label>Số điện thoại</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="phone"
-              placeholder="Nhập số điện thoại (tùy chọn)" 
+              placeholder="Nhập số điện thoại"
               value={formData.phone}
               onChange={handleChange}
             />
           </div>
 
+          <div className="auth-form-grid auth-form-grid-2">
+            <div className="form-group">
+              <label>Giới tính</label>
+              <select name="gender" value={formData.gender} onChange={handleChange} required>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+                <option value="Khác">Khác</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Ngày sinh</label>
+              <input
+                type="date"
+                name="dateOfBirth"
+                value={formData.dateOfBirth}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
           <div className="form-group">
             <label>Địa chỉ nhận hàng</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="address"
-              placeholder="Nhập địa chỉ của bạn (tùy chọn)" 
+              placeholder="Nhập địa chỉ giao hàng"
               value={formData.address}
               onChange={handleChange}
             />
           </div>
 
-          <div style={{display: 'flex', gap: '15px'}}>
-            <div className="form-group" style={{flex: 1}}>
+          <div className="auth-form-grid auth-form-grid-2">
+            <div className="form-group">
               <label>Mật khẩu *</label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 name="password"
-                placeholder="Tạo mật khẩu" 
-                required 
+                placeholder="Tạo mật khẩu"
+                required
                 minLength={6}
                 value={formData.password}
                 onChange={handleChange}
               />
             </div>
 
-            <div className="form-group" style={{flex: 1}}>
-              <label>Xác nhận Mật khẩu *</label>
-              <input 
-                type="password" 
+            <div className="form-group">
+              <label>Xác nhận mật khẩu *</label>
+              <input
+                type="password"
                 name="confirmPassword"
-                placeholder="Nhập lại mật khẩu" 
-                required 
+                placeholder="Nhập lại mật khẩu"
+                required
                 minLength={6}
                 value={formData.confirmPassword}
                 onChange={handleChange}
@@ -159,7 +188,7 @@ const Register = () => {
         </form>
 
         <div className="auth-footer">
-          Đã có tài khoản? 
+          Đã có tài khoản?
           <Link to="/login" className="auth-link">Đăng nhập</Link>
         </div>
       </div>
