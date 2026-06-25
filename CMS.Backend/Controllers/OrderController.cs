@@ -84,7 +84,14 @@ namespace CMS.Backend.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Orders.Update(model);
+                var order = _context.Orders.FirstOrDefault(o => o.Id == model.Id);
+                if (order == null) return NotFound();
+
+                order.CustomerId = model.CustomerId;
+                order.OrderDate = model.OrderDate;
+                order.Status = model.Status;
+                order.Notes = model.Notes;
+
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }

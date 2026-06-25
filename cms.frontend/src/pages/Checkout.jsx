@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CreditCard, Truck, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { formatPrice } from '../data/mockData';
 import './Checkout.css';
 
@@ -11,6 +12,7 @@ const API_BASE_URL = 'https://localhost:7003';
 const Checkout = () => {
   const { cartItems, getCartTotal, clearCart } = useCart();
   const { user } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -85,9 +87,18 @@ const Checkout = () => {
       }
 
       setOrderSuccess(true);
+      showToast({
+        type: 'success',
+        title: 'Đặt hàng thành công',
+        message: 'Đơn hàng của bạn đã được ghi nhận.',
+      });
       clearCart();
     } catch (error) {
-      alert("Lỗi đặt hàng: " + error.message);
+      showToast({
+        type: 'error',
+        title: 'Lỗi đặt hàng',
+        message: error.message,
+      });
     } finally {
       setIsSubmitting(false);
     }

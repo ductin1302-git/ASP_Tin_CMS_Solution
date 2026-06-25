@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using System;
 using Microsoft.AspNetCore.Authorization;
+using X.PagedList;
 
 namespace CMS.Backend.Controllers
 {
@@ -21,8 +22,11 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int? id) 
+        public IActionResult Index(int? id, int? page) 
         {
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+
             IQueryable<Post> query = _context.Posts.Include(p => p.Category).OrderByDescending(p => p.CreatedDate);
             
             if (id.HasValue)
@@ -30,7 +34,7 @@ namespace CMS.Backend.Controllers
                 query = query.Where(p => p.CategoryId == id.Value);
             }
 
-            var posts = query.ToList();
+            var posts = query.ToPagedList(pageNumber, pageSize);
             return View(posts);
         }
 
@@ -103,6 +107,9 @@ namespace CMS.Backend.Controllers
         [HttpPost]
         public IActionResult Edit(Post model, IFormFile uploadImage)
         {
+            var post = _context.Posts.FirstOrDefault(p => p.Id == model.Id);
+            if (post == null) return NotFound();
+
             // Bước 1: Kiểm tra xem người dùng có chọn file ảnh mới không
             if (uploadImage != null && uploadImage.Length > 0)
             {
@@ -119,7 +126,7 @@ namespace CMS.Backend.Controllers
                 }
 
                 // Cập nhật đường dẫn ảnh mới vào model
-                model.ImageUrl = "/uploads/" + fileName;
+                post.ImageUrl = "/uploads/" + fileName;
             }
             else
             {
@@ -131,7 +138,9 @@ namespace CMS.Backend.Controllers
                     model.ImageUrl = oldPost.ImageUrl;
                 }
             }
-            _context.Posts.Update(model);
+            post.Title = model.Title;
+            post.Content = model.Content;
+            post.CategoryId = model.CategoryId;
             _context.SaveChanges();
             return RedirectToAction("Index");
         }

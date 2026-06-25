@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import './Auth.css';
 
 const Register = () => {
@@ -19,6 +20,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { login } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -61,7 +63,11 @@ const Register = () => {
       }
 
       login(data.user);
-      alert('Đăng ký thành công! Chào mừng đến với V-SPORT.');
+      showToast({
+        type: 'success',
+        title: 'Đăng ký thành công',
+        message: 'Chào mừng bạn đến với V-SPORT.',
+      });
       navigate('/');
     } catch (err) {
       setError(err.message);

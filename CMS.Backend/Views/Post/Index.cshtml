@@ -1,4 +1,6 @@
-@model IEnumerable<CMS.Data.Entities.Post>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<CMS.Data.Entities.Post>
 @{
     ViewData["Title"] = "Bài viết & Tin tức";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -80,5 +82,11 @@ else
                 </div>
             </div>
         }
+    </div>
+    <div class="pagination-container" style="margin-top:20px; display:flex; justify-content:center;">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions {
+            LiElementClasses = new string[] { "page-item" },
+            PageClasses = new string[] { "page-link" }
+        })
     </div>
 }

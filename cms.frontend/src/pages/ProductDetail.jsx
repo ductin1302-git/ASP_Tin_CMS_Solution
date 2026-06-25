@@ -4,6 +4,7 @@ import { CreditCard, RotateCcw, ShieldCheck, ShoppingCart, Star, Truck } from 'l
 import { formatPrice } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import ProductCard from '../components/ProductCard';
 import './ProductDetail.css';
 
@@ -15,6 +16,7 @@ const ProductDetail = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const { showToast, showCartToast } = useToast();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -107,22 +109,31 @@ const ProductDetail = () => {
   const handleAddToCart = () => {
     if (requireLogin()) return;
     if (stockQuantity <= 0) {
-      alert('San pham nay hien da het hang.');
+      showToast({
+        type: 'error',
+        title: 'Sản phẩm đã hết hàng',
+        message: product.name,
+      });
       return;
     }
 
     addToCart(product, quantity);
-    alert(`Da them ${quantity} san pham "${product.name}" vao gio hang.`);
+    showCartToast(product.name, quantity);
   };
 
   const handleBuyNow = () => {
     if (requireLogin()) return;
     if (stockQuantity <= 0) {
-      alert('San pham nay hien da het hang.');
+      showToast({
+        type: 'error',
+        title: 'Sản phẩm đã hết hàng',
+        message: product.name,
+      });
       return;
     }
 
     addToCart(product, quantity);
+    showCartToast(product.name, quantity);
     navigate('/cart');
   };
 

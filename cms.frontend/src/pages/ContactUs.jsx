@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 import './ContactUs.css';
 
 const ContactUs = () => {
@@ -12,6 +13,7 @@ const ContactUs = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +37,11 @@ const ContactUs = () => {
 
       if (response.ok) {
         setIsSubmitted(true);
+        showToast({
+          type: 'success',
+          title: 'Đã gửi tin nhắn',
+          message: 'V-SPORT sẽ phản hồi bạn sớm nhất.',
+        });
         setFormData({
           name: '',
           email: '',
@@ -43,11 +50,19 @@ const ContactUs = () => {
           message: ''
         });
       } else {
-        alert('Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại sau.');
+        showToast({
+          type: 'error',
+          title: 'Không gửi được tin nhắn',
+          message: 'Vui lòng thử lại sau.',
+        });
       }
     } catch (error) {
       console.error('Error submitting contact form:', error);
-      alert('Không thể kết nối đến máy chủ.');
+      showToast({
+        type: 'error',
+        title: 'Không thể kết nối máy chủ',
+        message: 'Kiểm tra backend rồi thử lại.',
+      });
     } finally {
       setLoading(false);
     }

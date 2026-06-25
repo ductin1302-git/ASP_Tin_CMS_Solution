@@ -65,7 +65,14 @@ namespace CMS.Backend.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.OrderDetails.Update(model);
+                var orderDetail = _context.OrderDetails.FirstOrDefault(od => od.Id == model.Id);
+                if (orderDetail == null) return NotFound();
+
+                orderDetail.OrderId = model.OrderId;
+                orderDetail.ProductId = model.ProductId;
+                orderDetail.Quantity = model.Quantity;
+                orderDetail.UnitPrice = model.UnitPrice;
+
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
