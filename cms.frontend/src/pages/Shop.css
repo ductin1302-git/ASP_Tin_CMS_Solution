@@ -284,3 +284,29 @@
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
+
+.shop-empty-state {
+  padding: 42px 24px;
+  text-align: center;
+  border: 1px solid rgba(0, 200, 255, 0.18);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(8, 28, 56, 0.92), rgba(3, 16, 34, 0.96));
+}
+
+.shop-empty-state img {
+  width: min(320px, 100%);
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto 1.4rem;
+  opacity: 0.9;
+}
+
+.shop-empty-state h3 {
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.shop-empty-state p {
+  color: var(--text-gray);
+}

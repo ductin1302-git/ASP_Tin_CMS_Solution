@@ -72,6 +72,12 @@ namespace CMS.Backend.Controllers
                 return BadRequest(new { message = "Tên đăng nhập đã được sử dụng" });
             }
 
+            // Mã hóa mật khẩu
+            if (!string.IsNullOrEmpty(user.PasswordHash))
+            {
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+            }
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -119,7 +125,7 @@ namespace CMS.Backend.Controllers
             // Nếu người dùng nhập mật khẩu mới thì cập nhật
             if (!string.IsNullOrEmpty(userDto.NewPassword))
             {
-                user.PasswordHash = userDto.NewPassword;
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.NewPassword);
             }
 
             _context.Users.Update(user);

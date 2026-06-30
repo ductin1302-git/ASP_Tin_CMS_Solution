@@ -6,8 +6,9 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import './ProductCard.css';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'https://localhost:7003';
+const PRODUCT_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -17,12 +18,14 @@ const ProductCard = ({ product }) => {
   const { showToast, showCartToast } = useToast();
 
   const getImageUrl = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop';
+    if (!url) return PRODUCT_IMAGE_FALLBACK;
     if (url.startsWith('http')) return url;
+    if (url.startsWith('/images/')) return url;
+    if (url.startsWith('/img/')) return PRODUCT_IMAGE_FALLBACK;
     return `${API_BASE_URL}${url}`;
   };
 
-  const categoryName = product.categoryProduct?.name || product.category || 'San pham';
+  const categoryName = product.categoryProduct?.name || product.category || 'Sản phẩm';
   const stockQuantity = product.stockQuantity ?? product.stock ?? 0;
   const cleanDescription = product.description
     ? product.description.replace(/<[^>]*>/g, '').trim()
@@ -33,7 +36,7 @@ const ProductCard = ({ product }) => {
       navigate('/login', {
         state: {
           from: `${location.pathname}${location.search}`,
-          message: 'Vui long dang nhap de them san pham vao gio hang.',
+          message: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.',
         },
       });
       return;
@@ -55,7 +58,7 @@ const ProductCard = ({ product }) => {
   return (
     <div className="product-card animate-fade-in">
       <div className="product-image-container">
-        {product.isNew && <span className="badge new-badge">Moi</span>}
+        {product.isNew && <span className="badge new-badge">Mới</span>}
         <Link to={`/product/${product.id}`}>
           <img
             src={getImageUrl(product.imageUrl || product.image)}
@@ -67,12 +70,12 @@ const ProductCard = ({ product }) => {
         <button
           type="button"
           className="add-to-cart-overlay"
-          aria-label="Add to cart"
+          aria-label="Thêm vào giỏ hàng"
           onClick={handleAddToCart}
           disabled={stockQuantity <= 0}
         >
           <ShoppingCart size={20} />
-          <span>{stockQuantity > 0 ? 'Them vao gio' : 'Het hang'}</span>
+          <span>{stockQuantity > 0 ? 'Thêm vào giỏ' : 'Hết hàng'}</span>
         </button>
       </div>
 
@@ -82,16 +85,16 @@ const ProductCard = ({ product }) => {
           <h3 className="product-title">{product.name}</h3>
         </Link>
         <p className="product-excerpt">
-          {cleanDescription || 'San pham the thao duoc chon loc cho phong cach nang dong.'}
+          {cleanDescription || 'Sản phẩm thể thao được chọn lọc cho phong cách năng động.'}
         </p>
         <div className="product-card-meta">
-          <span><Package size={14} /> {stockQuantity > 0 ? `Con ${stockQuantity}` : 'Het hang'}</span>
+          <span><Package size={14} /> {stockQuantity > 0 ? `Còn ${stockQuantity}` : 'Hết hàng'}</span>
           <span>VS-{String(product.id).padStart(4, '0')}</span>
         </div>
         <div className="product-bottom">
           <span className="product-price">{formatPrice(product.price)}</span>
           <Link to={`/product/${product.id}`} className="product-detail-link">
-            Chi tiet
+            Chi tiết
           </Link>
         </div>
       </div>

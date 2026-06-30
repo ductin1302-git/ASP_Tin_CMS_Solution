@@ -7,9 +7,10 @@ import {
   Award, ChevronDown, Play, Pause, Volume2, VolumeX,
   Zap, Star, TrendingUp, Users,
 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 import './Home.css';
 
-const API_BASE_URL = 'https://localhost:7003';
+const SPORTS_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=900&auto=format&fit=crop';
 
 /* ─── Scroll-reveal hook ─────────────────────────── */
 function useReveal(threshold = 0.14) {
@@ -45,12 +46,9 @@ function Counter({ to, suffix = '', duration = 1800 }) {
   return <span ref={ref}>{val}{suffix}</span>;
 }
 
-const heroSlides = [
-  { id: 'banner-1', image: '/images/banners/banner-1.png', title: 'Banner 1', fallbackTitle: 'V-SPORT PERFORMANCE', fallbackText: 'Chuyên giày thể thao — êm chân, bền bỉ, phong cách.', tag: 'New Season' },
-  { id: 'banner-2', image: '/images/banners/banner-2.png', title: 'Banner 2', fallbackTitle: 'RUN SMART', fallbackText: 'Bộ sưu tập mới cho tốc độ, tập luyện và lifestyle.', tag: 'Hot Drop' },
-  { id: 'uudai-3',  image: '/images/banners/uudai-3.png',  title: 'Uu dai 3', fallbackTitle: 'ƯU ĐÃI THÀNH VIÊN', fallbackText: 'Săn deal nổi bật, mua sắm online dễ dàng mỗi ngày.', tag: 'Sale' },
-  { id: 'banner-4', image: '/images/banners/banner-4.png', title: 'Banner 4', fallbackTitle: 'TRAIN HARD', fallbackText: 'Sẵn sàng cho mọi buổi tập với outfit thể thao năng động.', tag: 'Training' },
-  { id: 'banner-5', image: '/images/banners/banner-5.png', title: 'Banner 5', fallbackTitle: 'STYLE EVERYDAY', fallbackText: 'Sneaker lifestyle, phụ kiện và sản phẩm nổi bật mỗi ngày.', tag: 'Lifestyle' },
+const defaultHeroSlides = [
+  { id: 'banner-1', image: '/images/banners/banner-1.png', title: 'Banner 1', fallbackTitle: 'V-SPORT BỨT PHÁ', fallbackText: 'Chuyên giày thể thao - êm chân, bền bỉ, phong cách.', tag: 'Mùa mới' },
+  { id: 'banner-2', image: '/images/banners/banner-2.png', title: 'Banner 2', fallbackTitle: 'CHẠY THÔNG MINH', fallbackText: 'Bộ sưu tập mới cho tốc độ, tập luyện và phong cách sống năng động.', tag: 'Hàng mới' },
 ];
 
 const STATS = [
@@ -63,8 +61,10 @@ const STATS = [
 /* ════════════════════════════════════════════════ */
 const Home = () => {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [heroSlides, setHeroSlides] = useState(defaultHeroSlides);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [latestProducts, setLatestProducts] = useState([]);
+  const [hotProducts, setHotProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [latestPosts, setLatestPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,6 +79,7 @@ const Home = () => {
   const [trustRef, trustVisible] = useReveal(0.1);
   const [catRef, catVisible] = useReveal(0.1);
   const [featRef, featVisible] = useReveal(0.1);
+  const [hotRef, hotVisible] = useReveal(0.1);
   const [showRef, showVisible] = useReveal(0.15);
   const [latRef, latVisible] = useReveal(0.1);
   const [newsRef, newsVisible] = useReveal(0.1);
@@ -93,8 +94,10 @@ const Home = () => {
   ], []);
 
   const getImageUrl = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=900&auto=format&fit=crop';
+    if (!url) return SPORTS_IMAGE_FALLBACK;
     if (url.startsWith('http')) return url;
+    if (url.startsWith('/images/')) return url;
+    if (url.startsWith('/img/')) return SPORTS_IMAGE_FALLBACK;
     return `${API_BASE_URL}${url}`;
   };
 
@@ -103,9 +106,11 @@ const Home = () => {
     const go = async () => {
       try {
         setIsLoading(true);
-        const [rP, rC] = await Promise.all([
+        const [rP, rC, rH, rB] = await Promise.all([
           fetch(`${API_BASE_URL}/api/Products`),
           fetch(`${API_BASE_URL}/api/CategoriesProducts`),
+          fetch(`${API_BASE_URL}/api/Products/hot-products`),
+          fetch(`${API_BASE_URL}/api/Banners/Home`),
         ]);
         if (rP.ok) {
           const d = await rP.json();
@@ -115,6 +120,23 @@ const Home = () => {
         if (rC.ok) {
           const d = await rC.json();
           setCategories(d.slice(0, 4).map((c, i) => ({ ...c, image: categoryImages[i % categoryImages.length] })));
+        }
+        if (rH.ok) {
+          setHotProducts(await rH.json());
+        }
+        if (rB.ok) {
+          const d = await rB.json();
+          if (d && d.length > 0) {
+            setHeroSlides(d.map(b => ({
+              id: b.id.toString(),
+              image: b.imageUrl,
+              title: b.title,
+              fallbackTitle: b.title,
+              fallbackText: b.description || '',
+              tag: 'V-SPORT',
+              linkUrl: b.linkUrl
+            })));
+          }
         }
         try {
           const rN = await fetch(`${API_BASE_URL}/api/posts`);
@@ -130,7 +152,7 @@ const Home = () => {
   useEffect(() => {
     const t = setInterval(() => setActiveSlide(c => (c + 1) % heroSlides.length), 4500);
     return () => clearInterval(t);
-  }, []);
+  }, [heroSlides.length]);
 
   /* parallax video section on scroll */
   useEffect(() => {
@@ -159,6 +181,7 @@ const Home = () => {
   const toggleVideo = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
+    if (!v.currentSrc) return;
     if (videoPlaying) { v.pause(); setVideoPlaying(false); }
     else { v.play(); setVideoPlaying(true); }
   }, [videoPlaying]);
@@ -197,13 +220,17 @@ const Home = () => {
         </div>
         <div className="home-hero-track" style={{ transform: `translateX(-${activeSlide * 100}%)` }}>
           {heroSlides.map((slide) => (
-            <Link to="/shop" className="home-hero-slide" key={slide.id}>
-              {!heroImgErrors[slide.id] && (
-                <img
-                  src={slide.image}
-                  alt={slide.title}
-                  onError={() => setHeroImgErrors(p => ({ ...p, [slide.id]: true }))}
-                />
+            <Link to={slide.linkUrl || "/shop"} className="home-hero-slide" key={slide.id}>
+              {!heroImgErrors[slide.id] && slide.image && (
+                (slide.image.endsWith('.mp4') || slide.image.endsWith('.webm')) ? (
+                  <video src={getImageUrl(slide.image)} autoPlay muted loop playsInline style={{width: '100%', height: '100%', objectFit: 'cover'}}></video>
+                ) : (
+                  <img
+                    src={getImageUrl(slide.image)}
+                    alt={slide.title}
+                    onError={() => setHeroImgErrors(p => ({ ...p, [slide.id]: true }))}
+                  />
+                )
               )}
               <div className="home-hero-fallback">
                 <span className="home-hero-brand-tag">
@@ -328,6 +355,33 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ══════════════════ HOT PRODUCTS ══════════════════ */}
+      <section
+        ref={hotRef}
+        className={`home-section home-products-section${hotVisible ? ' home-revealed' : ''}`}
+      >
+        <div className="container">
+          <div className="home-section-header">
+            <div>
+              <span className="home-section-kicker">Best Sellers</span>
+              <h2>Sản phẩm nổi bật / Bán chạy</h2>
+            </div>
+            <Link to="/shop" className="home-view-link">
+              Xem tất cả <ChevronRight size={18} />
+            </Link>
+          </div>
+          {isLoading ? <LoadingGrid columns={3} /> : (
+            <div className="grid grid-cols-3 home-product-grid">
+              {hotProducts.map((p, i) => (
+                <div className="home-prod-wrap" key={p.id} style={{ '--pi': i }}>
+                  <ProductCard product={p} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* ══════════════════ STANDALONE VIDEO SECTION ══════════════════ */}
       <section
         ref={showRef}
@@ -338,12 +392,9 @@ const Home = () => {
           <video
             ref={videoRef}
             className="home-vs-video"
-            autoPlay muted loop playsInline
+            muted loop playsInline preload="none"
             poster="https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=1600&auto=format&fit=crop"
-          >
-            <source src="https://videos.pexels.com/video-files/4584429/4584429-uhd_2732_1440_25fps.mp4" type="video/mp4" />
-            <source src="https://videos.pexels.com/video-files/3571264/3571264-uhd_2732_1440_25fps.mp4" type="video/mp4" />
-          </video>
+          />
           <div className="home-vs-overlay" />
           <div className="home-vs-scanlines" aria-hidden="true" />
         </div>
@@ -451,7 +502,7 @@ const Home = () => {
                     <img
                       src={getImageUrl(post.imageUrl)}
                       alt={post.title}
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=900&auto=format&fit=crop'; }}
+                      onError={(e) => { e.target.src = SPORTS_IMAGE_FALLBACK; }}
                     />
                     <div className="home-news-img-overlay" />
                   </Link>
@@ -461,7 +512,7 @@ const Home = () => {
                       {post.categoryName && <span><Tag size={14} /> {post.categoryName}</span>}
                     </div>
                     <Link to={`/news/${post.id}`}><h3>{post.title}</h3></Link>
-                    <p>{post.content ? `${post.content.replace(/<[^>]*>/g, '').substring(0, 118)}...` : 'Cập nhật thêm cảm hứng phối đồ và xu hướng thể thao mới.'}</p>
+                    <p>{post.content ? `${post.content.replace(/<[^>]*>/g, '').substring(0, 118)}...` : 'Cập nhật thêm cảm hứng tập luyện và xu hướng thể thao mới.'}</p>
                     <Link to={`/news/${post.id}`} className="home-read-more">
                       Đọc tiếp <ArrowRight size={16} />
                     </Link>

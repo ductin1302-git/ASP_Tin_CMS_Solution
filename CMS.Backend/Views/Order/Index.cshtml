@@ -1,10 +1,13 @@
-@model IEnumerable<CMS.Data.Entities.Order>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<CMS.Data.Entities.Order>
 @{
     ViewData["Title"] = "Quản lý Đơn hàng";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    int pending    = Model.Count(o => o.Status == 0);
-    int delivering = Model.Count(o => o.Status == 1);
-    int done       = Model.Count(o => o.Status == 2);
+    int pending    = ViewBag.Pending ?? 0;
+    int delivering = ViewBag.Delivering ?? 0;
+    int done       = ViewBag.Done ?? 0;
+    int total      = ViewBag.TotalOrders ?? 0;
 }
 
 <div class="page-header">
@@ -44,7 +47,7 @@
         <div class="data-card-title">
             <span class="title-icon"><i class="bi bi-bag-check"></i></span>
             Tất cả đơn hàng
-            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.Count() đơn</span>
+            <span class="badge-admin badge-primary" style="margin-left:6px;">@total đơn</span>
         </div>
     </div>
     <div style="overflow-x:auto;">
@@ -121,6 +124,13 @@
                     }
                 </tbody>
             </table>
+            <div class="pagination-container" style="margin-top:20px; display:flex; justify-content:center;">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" }
+                })
+            </div>
         }
     </div>
 </div>
+

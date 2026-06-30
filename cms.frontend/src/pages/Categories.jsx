@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Zap, Star, TrendingUp } from 'lucide-react';
 import './Categories.css';
+import { API_BASE_URL } from '../config/api';
 
 const categoryImages = [
   'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=900&auto=format&fit=crop',
@@ -34,7 +35,7 @@ const Categories = () => {
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
-        const res = await fetch('https://localhost:7003/api/CategoriesProducts');
+        const res = await fetch(`${API_BASE_URL}/api/CategoriesProducts`);
         if (!res.ok) throw new Error('Không thể tải danh sách danh mục.');
         const data = await res.json();
         const enriched = data.map((cat, i) => ({

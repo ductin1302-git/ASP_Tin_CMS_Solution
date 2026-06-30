@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../config/api';
 import './Auth.css';
 
 const Login = () => {
@@ -21,7 +22,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://localhost:7003/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -37,6 +38,7 @@ const Login = () => {
       navigate(redirectPath, { replace: true });
     } catch (err) {
       setError(err.message);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setIsLoading(false);
     }
@@ -82,6 +84,8 @@ const Login = () => {
         </form>
 
         <div className="auth-footer">
+          <Link to="/forgot-password" className="auth-link">Quên mật khẩu?</Link>
+          <span style={{ margin: '0 8px' }}>•</span>
           Chưa có tài khoản?
           <Link to="/register" className="auth-link">Đăng ký ngay</Link>
         </div>

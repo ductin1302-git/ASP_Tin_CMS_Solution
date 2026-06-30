@@ -4,9 +4,12 @@ using CMS.Data.Entities;
 using CMS.Data;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using X.PagedList;
+
 namespace CMS.Backend.Controllers
 {
     [Authorize]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class CategoryProductController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,9 +19,11 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? page)
         {
-            var data = _context.CategoriesProducts.ToList(); 
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var data = _context.CategoriesProducts.OrderByDescending(c => c.Id).ToPagedList(pageNumber, pageSize); 
             return View(data);
         }
 

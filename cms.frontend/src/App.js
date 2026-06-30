@@ -19,6 +19,7 @@ import Register from './pages/Register';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import Profile from './pages/Profile';
+import ForgotPassword from './pages/ForgotPassword';
 
 import Checkout from './pages/Checkout';
 
@@ -41,6 +42,7 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/register" element={<Register />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs />} />

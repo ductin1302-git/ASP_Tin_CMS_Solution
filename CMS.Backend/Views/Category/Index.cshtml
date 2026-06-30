@@ -1,4 +1,6 @@
-@model IEnumerable<CMS.Data.Entities.Category>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<CMS.Data.Entities.Category>
 @{
     ViewData["Title"] = "Danh mục bài viết";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -19,7 +21,7 @@
         <div class="data-card-title">
             <span class="title-icon"><i class="bi bi-folder2-open"></i></span>
             Tất cả danh mục
-            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.Count() danh mục</span>
+            <span class="badge-admin badge-primary" style="margin-left:6px;">@Model.TotalItemCount danh mục</span>
         </div>
     </div>
     <div style="overflow-x:auto;">
@@ -84,6 +86,13 @@
                     }
                 </tbody>
             </table>
+            <div class="pagination-container" style="margin-top:20px; display:flex; justify-content:center;">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" }
+                })
+            </div>
         }
     </div>
 </div>
+

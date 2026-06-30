@@ -228,8 +228,19 @@ body {
    PRODUCTS
 ══════════════════════════════════════════════════ */
 .home-prod-wrap {
+  height: 100%;
+  min-width: 0;
+  display: flex;
   animation: prodStagger 0.6s cubic-bezier(0.22,1,0.36,1) calc(var(--pi) * 0.09s) both;
   will-change: opacity, transform;
+}
+
+.home-product-grid {
+  align-items: stretch;
+}
+
+.home-prod-wrap .product-card {
+  width: 100%;
 }
 @keyframes prodStagger {
   from { opacity: 0; transform: translateY(28px) scale(0.97); }

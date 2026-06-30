@@ -7,8 +7,9 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import ProductCard from '../components/ProductCard';
 import './ProductDetail.css';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'https://localhost:7003';
+const PRODUCT_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -26,8 +27,10 @@ const ProductDetail = () => {
   const [mainImage, setMainImage] = useState('');
 
   const getImageUrl = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop';
+    if (!url) return PRODUCT_IMAGE_FALLBACK;
     if (url.startsWith('http')) return url;
+    if (url.startsWith('/images/')) return url;
+    if (url.startsWith('/img/')) return PRODUCT_IMAGE_FALLBACK;
     return `${API_BASE_URL}${url}`;
   };
 
@@ -41,9 +44,9 @@ const ProductDetail = () => {
         const response = await fetch(`${API_BASE_URL}/api/Products/${id}`);
         if (!response.ok) {
           if (response.status === 404) {
-            throw new Error('San pham khong ton tai.');
+            throw new Error('Sản phẩm không tồn tại.');
           }
-          throw new Error('Khong the tai thong tin san pham.');
+          throw new Error('Không thể tải thông tin sản phẩm.');
         }
 
         const data = await response.json();
@@ -76,7 +79,7 @@ const ProductDetail = () => {
   }, [id]);
 
   const stockQuantity = product?.stockQuantity ?? product?.stock ?? 0;
-  const categoryName = product?.categoryProduct?.name || product?.category || 'San pham';
+  const categoryName = product?.categoryProduct?.name || product?.category || 'Sản phẩm';
 
   const galleryImages = useMemo(() => {
     if (!product) return [];
@@ -93,7 +96,7 @@ const ProductDetail = () => {
     navigate('/login', {
       state: {
         from: `${location.pathname}${location.search}`,
-        message: 'Vui long dang nhap truoc khi them vao gio hang hoac mua san pham.',
+        message: 'Vui lòng đăng nhập trước khi thêm vào giỏ hàng hoặc mua sản phẩm.',
       },
     });
     return true;
@@ -116,6 +119,14 @@ const ProductDetail = () => {
       });
       return;
     }
+    if (quantity > stockQuantity) {
+      showToast({
+        type: 'error',
+        title: 'Số lượng sản phẩm trong kho không đủ!',
+        message: `Sản phẩm này chỉ còn ${stockQuantity} trong kho.`,
+      });
+      return;
+    }
 
     addToCart(product, quantity);
     showCartToast(product.name, quantity);
@@ -131,6 +142,14 @@ const ProductDetail = () => {
       });
       return;
     }
+    if (quantity > stockQuantity) {
+      showToast({
+        type: 'error',
+        title: 'Số lượng sản phẩm trong kho không đủ!',
+        message: `Sản phẩm này chỉ còn ${stockQuantity} trong kho.`,
+      });
+      return;
+    }
 
     addToCart(product, quantity);
     showCartToast(product.name, quantity);
@@ -140,7 +159,7 @@ const ProductDetail = () => {
   if (isLoading) {
     return (
       <div className="container" style={{ padding: '100px 0', textAlign: 'center' }}>
-        <h2>Dang tai thong tin san pham...</h2>
+        <h2>Đang tải thông tin sản phẩm...</h2>
       </div>
     );
   }
@@ -148,8 +167,8 @@ const ProductDetail = () => {
   if (error) {
     return (
       <div className="container" style={{ padding: '100px 0', textAlign: 'center', color: 'var(--sport-red-hover)' }}>
-        <h2>Loi: {error}</h2>
-        <button className="btn btn-outline" onClick={() => navigate('/shop')}>Quay lai cua hang</button>
+        <h2>Lỗi: {error}</h2>
+        <button className="btn btn-outline" onClick={() => navigate('/shop')}>Quay lại cửa hàng</button>
       </div>
     );
   }
@@ -160,9 +179,9 @@ const ProductDetail = () => {
     <div className="product-detail-page">
       <div className="container">
         <nav className="breadcrumb">
-          <Link to="/">Trang chu</Link>
+          <Link to="/">Trang chủ</Link>
           <span className="separator">/</span>
-          <Link to="/shop">Cua hang</Link>
+          <Link to="/shop">Cửa hàng</Link>
           <span className="separator">/</span>
           <Link to={`/shop?categoryId=${product.categoryProductId ?? product.categoryId}`}>{categoryName}</Link>
           <span className="separator">/</span>
@@ -200,9 +219,9 @@ const ProductDetail = () => {
                   <Star fill="#fbbf24" color="#fbbf24" size={18} />
                   <Star fill="#fbbf24" color="#fbbf24" size={18} />
                   <Star color="#d1d5db" size={18} />
-                  <span className="review-count">(42 danh gia)</span>
+                  <span className="review-count">(42 đánh giá)</span>
                 </div>
-                <span className="sku">Ma SP: VS-{String(product.id).padStart(4, '0')}</span>
+                <span className="sku">Mã SP: VS-{String(product.id).padStart(4, '0')}</span>
               </div>
             </div>
 
@@ -212,34 +231,34 @@ const ProductDetail = () => {
               {stockQuantity > 0 ? (
                 <span className="status-in-stock">
                   <span className="status-dot"></span>
-                  Con hang ({stockQuantity} san pham san co)
+                  Còn hàng ({stockQuantity} sản phẩm sẵn có)
                 </span>
               ) : (
                 <span className="status-out-stock">
                   <span className="status-dot"></span>
-                  Het hang
+                  Hết hàng
                 </span>
               )}
             </div>
 
             {!user && (
               <div className="product-login-note">
-                Ban can dang nhap truoc khi them vao gio hang hoac mua ngay.
+                Bạn cần đăng nhập trước khi thêm vào giỏ hàng hoặc mua ngay.
               </div>
             )}
 
             <div className="quick-benefits">
               <div className="benefit-item">
                 <Truck size={20} className="benefit-icon" />
-                <span>Giao hang toan quoc</span>
+                <span>Giao hàng toàn quốc</span>
               </div>
               <div className="benefit-item">
                 <ShieldCheck size={20} className="benefit-icon" />
-                <span>Cam ket chinh hang 100%</span>
+                <span>Cam kết chính hãng 100%</span>
               </div>
               <div className="benefit-item">
                 <RotateCcw size={20} className="benefit-icon" />
-                <span>Doi tra trong vong 7 ngay</span>
+                <span>Đổi trả trong vòng 7 ngày</span>
               </div>
             </div>
 
@@ -250,7 +269,7 @@ const ProductDetail = () => {
                 <button className="qty-btn" onClick={() => handleQuantityChange(1)} disabled={stockQuantity <= quantity}>+</button>
               </div>
               <button className="btn-add-cart" onClick={handleAddToCart} disabled={stockQuantity === 0}>
-                <ShoppingCart size={20} /> Them vao gio
+                <ShoppingCart size={20} /> Thêm vào giỏ
               </button>
             </div>
 
@@ -263,38 +282,38 @@ const ProductDetail = () => {
         <div className="product-tabs-section">
           <div className="tabs-header">
             <button className={`tab-btn ${activeTab === 'description' ? 'active' : ''}`} onClick={() => setActiveTab('description')}>
-              Mo ta san pham
+              Mô tả sản phẩm
             </button>
             <button className={`tab-btn ${activeTab === 'shipping' ? 'active' : ''}`} onClick={() => setActiveTab('shipping')}>
-              Van chuyen & Doi tra
+              Vận chuyển & Đổi trả
             </button>
             <button className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>
-              Danh gia (42)
+              Đánh giá (42)
             </button>
           </div>
 
           <div className="tab-content">
             {activeTab === 'description' && (
               <div className="tab-pane animate-fade-in">
-                <h3>Chi tiet san pham</h3>
+                <h3>Chi tiết sản phẩm</h3>
                 <p>
-                  {product.description || 'San pham nay hien chua co mo ta chi tiet. Vui long lien he bo phan ho tro khach hang de biet them thong tin.'}
+                  {product.description || 'Sản phẩm này hiện chưa có mô tả chi tiết. Vui lòng liên hệ bộ phận hỗ trợ khách hàng để biết thêm thông tin.'}
                 </p>
               </div>
             )}
 
             {activeTab === 'shipping' && (
               <div className="tab-pane animate-fade-in">
-                <h3>Chinh sach van chuyen</h3>
+                <h3>Chính sách vận chuyển</h3>
                 <ul>
-                  <li>Giao hang tieu chuan: 2-4 ngay lam viec.</li>
-                  <li>Giao hang hoa toc trong ngay tai khu vuc ho tro.</li>
-                  <li>Mien phi giao hang cho don hang tren 1.000.000 VND.</li>
+                  <li>Giao hàng tiêu chuẩn: 2-4 ngày làm việc.</li>
+                  <li>Giao hàng hỏa tốc trong ngày tại khu vực hỗ trợ.</li>
+                  <li>Miễn phí giao hàng cho đơn hàng trên 1.000.000 VND.</li>
                 </ul>
-                <h3>Chinh sach doi tra</h3>
+                <h3>Chính sách đổi trả</h3>
                 <ul>
-                  <li>Doi tra mien phi trong 7 ngay neu san pham co loi tu nha san xuat.</li>
-                  <li>San pham doi tra can con tem mac, hop va chua qua su dung.</li>
+                  <li>Đổi trả miễn phí trong 7 ngày nếu sản phẩm có lỗi từ nhà sản xuất.</li>
+                  <li>Sản phẩm đổi trả cần còn tem mác, hộp và chưa qua sử dụng.</li>
                 </ul>
               </div>
             )}
@@ -302,7 +321,7 @@ const ProductDetail = () => {
             {activeTab === 'reviews' && (
               <div className="tab-pane animate-fade-in product-review-empty">
                 <Star size={48} color="#d1d5db" />
-                <p>Chua co danh gia chi tiet nao. Hay la nguoi dau tien danh gia san pham nay.</p>
+                <p>Chưa có đánh giá chi tiết nào. Hãy là người đầu tiên đánh giá sản phẩm này.</p>
               </div>
             )}
           </div>
@@ -311,8 +330,8 @@ const ProductDetail = () => {
         {relatedProducts.length > 0 && (
           <div className="related-products-section">
             <div className="related-products-header">
-              <span className="home-section-kicker">Goi y cho ban</span>
-              <h2 className="section-title">San pham lien quan</h2>
+              <span className="home-section-kicker">Gợi ý cho bạn</span>
+              <h2 className="section-title">Sản phẩm liên quan</h2>
             </div>
             <div className="grid grid-cols-4">
               {relatedProducts.map((prod) => (

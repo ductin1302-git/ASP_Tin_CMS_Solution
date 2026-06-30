@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, ArrowLeft } from 'lucide-react';
 import './NewsDetail.css';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'https://localhost:7003';
+const SPORTS_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800&auto=format&fit=crop';
 
 const NewsDetail = () => {
   const { id } = useParams();
@@ -16,7 +17,7 @@ const NewsDetail = () => {
     const fetchPost = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`https://localhost:7003/api/Posts/${id}`);
+        const response = await fetch(`${API_BASE_URL}/api/Posts/${id}`);
         if (!response.ok) {
           if (response.status === 404) {
             throw new Error('Bài viết không tồn tại!');
@@ -36,8 +37,10 @@ const NewsDetail = () => {
   }, [id]);
 
   const getImageUrl = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800&auto=format&fit=crop';
+    if (!url) return SPORTS_IMAGE_FALLBACK;
     if (url.startsWith('http')) return url;
+    if (url.startsWith('/images/')) return url;
+    if (url.startsWith('/img/')) return SPORTS_IMAGE_FALLBACK;
     return `${API_BASE_URL}${url}`;
   };
 
@@ -66,7 +69,7 @@ const NewsDetail = () => {
             src={getImageUrl(post.imageUrl)} 
             alt={post.title} 
             className="news-detail-image" 
-            onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=800&auto=format&fit=crop' }} 
+            onError={(e) => { e.target.src = SPORTS_IMAGE_FALLBACK }} 
           />
         </div>
 

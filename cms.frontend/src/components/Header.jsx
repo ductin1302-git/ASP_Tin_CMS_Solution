@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Search, User, Menu, X, LogOut } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import './Header.css';
+import { API_BASE_URL } from '../config/api';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { getCartCount } = useCart();
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && searchQuery.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
   return (
     <header className="header">
-      <div className="container header-container">
+      <div className="header-container">
         {/* Mobile Menu Toggle */}
         <button 
           className="mobile-menu-btn"
@@ -40,29 +52,51 @@ const Header = () => {
 
         {/* Action Icons */}
         <div className="header-actions">
-          <button className="icon-btn" aria-label="Search">
-            <Search size={22} />
-          </button>
+          {/* Search Box */}
+          <div className={`header-search ${isSearchOpen ? 'open' : ''}`}>
+            <input 
+              type="text" 
+              placeholder="Tìm kiếm sản phẩm..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
+              className={isSearchOpen ? 'visible' : ''}
+            />
+            <button className="icon-btn" aria-label="Tìm kiếm" onClick={() => {
+              if (isSearchOpen && searchQuery.trim()) {
+                handleSearch({ key: 'Enter' });
+              } else {
+                setIsSearchOpen(!isSearchOpen);
+              }
+            }}>
+              <Search size={22} />
+            </button>
+          </div>
+
           {user ? (
             <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
-              <Link to="/profile" style={{display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary-color)', fontWeight: '600', textDecoration: 'none', padding: '6px 12px', borderRadius: '30px', background: 'rgba(255, 107, 0, 0.1)', transition: 'all 0.3s ease'}} className="profile-badge">
+              <Link to="/profile" style={{display: 'flex', alignItems: 'center', gap: '10px', color: '#fff', fontWeight: '600', textDecoration: 'none', padding: '6px 16px 6px 6px', borderRadius: '40px', background: 'linear-gradient(135deg, #ff6b00, #ff9500)', boxShadow: '0 4px 10px rgba(255, 107, 0, 0.3)', transition: 'transform 0.2s ease', border: '1px solid rgba(255,255,255,0.2)'}} className="profile-badge">
                 {user.avatarUrl ? (
-                  <img src={`https://localhost:7003${user.avatarUrl}`} alt={user.fullName} style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
+                  <img src={user.avatarUrl.startsWith('http') ? user.avatarUrl : `${API_BASE_URL}${user.avatarUrl}`} alt={user.fullName} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '2px solid white' }} />
                 ) : (
-                  <User size={18} />
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#ff6b00', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <User size={18} />
+                  </div>
                 )}
-                <span>{user.fullName}</span>
+                <span style={{ maxWidth: '100px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', lineHeight: '1' }} title={user.fullName}>
+                  {user.fullName}
+                </span>
               </Link>
               <button className="icon-btn" onClick={logout} title="Đăng xuất" style={{border: 'none', background: 'none', cursor: 'pointer', color: '#ef4444'}}>
                 <LogOut size={20} />
               </button>
             </div>
           ) : (
-            <Link to="/login" className="icon-btn" aria-label="User Profile">
+            <Link to="/login" className="icon-btn" aria-label="Tài khoản">
               <User size={22} />
             </Link>
           )}
-          <Link to="/cart" className="icon-btn cart-btn" aria-label="Shopping Cart">
+          <Link to="/cart" className="icon-btn cart-btn" aria-label="Giỏ hàng">
             <ShoppingBag size={22} />
             <span className="cart-count">{getCartCount()}</span>
           </Link>

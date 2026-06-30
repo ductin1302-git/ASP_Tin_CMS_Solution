@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace CMS.Backend.Controllers
 {
     [Authorize]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class OrderDetailController : Controller
     {
         private readonly ApplicationDbContext _context;

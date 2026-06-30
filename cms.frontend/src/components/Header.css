@@ -10,6 +10,7 @@
   display: flex;
   align-items: center;
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .header-container {
@@ -17,6 +18,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  padding: 0 2rem;
 }
 
 .logo {
@@ -33,15 +35,22 @@
 
 .navigation .nav-list {
   display: flex;
-  gap: 2.5rem;
+  gap: 1.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: center;
 }
 
 .navigation a {
-  font-weight: 800;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   position: relative;
-  color: rgba(234, 247, 255, 0.82);
+  color: rgba(234, 247, 255, 0.9);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  padding: 5px 0;
 }
 
 .navigation a::after {

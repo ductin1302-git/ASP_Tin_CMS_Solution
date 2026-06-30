@@ -5,10 +5,13 @@ using CMS.Data;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using System.Threading.Tasks;
+using X.PagedList;
 
 namespace CMS.Backend.Controllers
 {
     [Authorize]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class ContactController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -18,9 +21,11 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(int? page)
         {
-            var contacts = await _context.Contacts.OrderByDescending(c => c.CreatedDate).ToListAsync();
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            var contacts = _context.Contacts.OrderByDescending(c => c.CreatedDate).ToPagedList(pageNumber, pageSize);
             return View(contacts);
         }
 
