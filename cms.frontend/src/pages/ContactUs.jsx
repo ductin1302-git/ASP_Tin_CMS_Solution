@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import './ContactUs.css';
+import { API_BASE_URL } from '../config/api';
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ const ContactUs = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch('https://localhost:7003/api/contacts', {
+      const response = await fetch(`${API_BASE_URL}/api/contacts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

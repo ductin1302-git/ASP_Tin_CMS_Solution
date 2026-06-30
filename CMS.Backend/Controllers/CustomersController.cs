@@ -25,10 +25,22 @@ namespace CMS.Backend.Controllers
 
         // GET: api/Customers
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? keyword = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 1000)
         {
-            var customers = await _context.Customers
+            var query = _context.Customers.AsQueryable();
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query = query.Where(c => c.FullName.Contains(keyword) || c.Email.Contains(keyword) || (c.Phone != null && c.Phone.Contains(keyword)));
+            }
+
+            var customers = await query
                 .OrderBy(c => c.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(c => new {
                     c.Id,
                     c.FullName,
@@ -76,6 +88,18 @@ namespace CMS.Backend.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            // Kiểm tra trùng lặp Email
+            if (await _context.Customers.AnyAsync(c => c.Email == customer.Email))
+            {
+                return BadRequest(new { message = "Email này đã được sử dụng. Vui lòng chọn Email khác." });
+            }
+
+            // Mã hóa mật khẩu
+            if (!string.IsNullOrWhiteSpace(customer.Password))
+            {
+                customer.Password = BCrypt.Net.BCrypt.HashPassword(customer.Password);
             }
 
             _context.Customers.Add(customer);
@@ -126,7 +150,7 @@ namespace CMS.Backend.Controllers
 
             if (!string.IsNullOrWhiteSpace(customer.Password))
             {
-                existingCustomer.Password = customer.Password;
+                existingCustomer.Password = BCrypt.Net.BCrypt.HashPassword(customer.Password);
             }
             
             // Giữ nguyên AvatarUrl nếu không gửi lên

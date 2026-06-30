@@ -5,9 +5,12 @@ using CMS.Data;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using X.PagedList;
+
 namespace CMS.Backend.Controllers
 {
     [Authorize]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class OrderController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -17,9 +20,18 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? page)
         {
-            var data = _context.Orders.Include(o => o.Customer).OrderByDescending(o => o.OrderDate).ToList(); 
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+            
+            var allOrders = _context.Orders.Include(o => o.Customer).OrderByDescending(o => o.OrderDate);
+            ViewBag.Pending = allOrders.Count(o => o.Status == 0);
+            ViewBag.Delivering = allOrders.Count(o => o.Status == 1);
+            ViewBag.Done = allOrders.Count(o => o.Status == 2);
+            ViewBag.TotalOrders = allOrders.Count();
+
+            var data = allOrders.ToPagedList(pageNumber, pageSize); 
             return View(data);
         }
 
@@ -47,6 +59,30 @@ namespace CMS.Backend.Controllers
             }
             // Trở về trang chi tiết
             return RedirectToAction("Details", new { id = id });
+        }
+
+        [HttpPost]
+        public IActionResult RemoveItem(int orderDetailId, int orderId)
+        {
+            var detail = _context.OrderDetails.FirstOrDefault(d => d.Id == orderDetailId && d.OrderId == orderId);
+            if (detail != null)
+            {
+                _context.OrderDetails.Remove(detail);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Details", new { id = orderId });
+        }
+
+        [HttpPost]
+        public IActionResult UpdateItemQuantity(int orderDetailId, int orderId, int quantity)
+        {
+            var detail = _context.OrderDetails.FirstOrDefault(d => d.Id == orderDetailId && d.OrderId == orderId);
+            if (detail != null && quantity > 0)
+            {
+                detail.Quantity = quantity;
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Details", new { id = orderId });
         }
 
         [HttpGet]

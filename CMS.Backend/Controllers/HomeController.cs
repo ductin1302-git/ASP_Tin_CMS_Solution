@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace CMS.Backend.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;

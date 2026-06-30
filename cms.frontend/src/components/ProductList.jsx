@@ -22,7 +22,7 @@ const ProductList = () => {
     }, []);
 
     if (loading) {
-        return <div className="text-center my-4">Đang tải danh sách sản phẩm thời trang...</div>;
+        return <div className="text-center my-4">Đang tải danh sách sản phẩm thể thao...</div>;
     }
 
     return (

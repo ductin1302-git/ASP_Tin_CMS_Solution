@@ -13,6 +13,7 @@ using X.PagedList;
 namespace CMS.Backend.Controllers
 {
     [Authorize]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class PostController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -159,6 +160,27 @@ namespace CMS.Backend.Controllers
                 _context.SaveChanges();
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult UploadImage(IFormFile upload)
+        {
+            if (upload != null && upload.Length > 0)
+            {
+                string folder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "ckeditor");
+                if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
+
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(upload.FileName);
+                string filePath = Path.Combine(folder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    upload.CopyTo(stream);
+                }
+
+                return Json(new { uploaded = 1, fileName = fileName, url = "/uploads/ckeditor/" + fileName });
+            }
+            return Json(new { uploaded = 0, error = new { message = "Lỗi tải ảnh" } });
         }
     }
 }

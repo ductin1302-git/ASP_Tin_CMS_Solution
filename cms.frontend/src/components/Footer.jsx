@@ -15,10 +15,10 @@ const Footer = () => {
             Cửa hàng đồ thể thao hàng đầu Việt Nam. Nơi bạn tìm thấy đam mê và giới hạn mới của bản thân.
           </p>
           <div className="social-links">
-            <a href="#" aria-label="Zalo"><MessageCircle size={20} /></a>
-            <a href="#" aria-label="Website"><Globe size={20} /></a>
-            <a href="#" aria-label="Email"><Mail size={20} /></a>
-            <a href="#" aria-label="Phone"><Phone size={20} /></a>
+            <a href="https://zalo.me/" aria-label="Zalo" target="_blank" rel="noreferrer"><MessageCircle size={20} /></a>
+            <Link to="/" aria-label="Website"><Globe size={20} /></Link>
+            <a href="mailto:support@vsport.vn" aria-label="Email"><Mail size={20} /></a>
+            <a href="tel:1800877678" aria-label="Phone"><Phone size={20} /></a>
           </div>
         </div>
 

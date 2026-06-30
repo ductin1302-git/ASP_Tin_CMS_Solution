@@ -7,7 +7,7 @@ const blogService = {
         return axiosClient.get(url);
     },
 
-    // Hàm gọi API lấy toàn bộ các bài viết (Mẹo phối đồ, tin tức thời trang)
+    // Hàm gọi API lấy toàn bộ các bài viết thể thao
     getAllPosts: () => {
         const url = '/Posts'; // Khớp với Route quản lý bài viết ở Backend
         return axiosClient.get(url);

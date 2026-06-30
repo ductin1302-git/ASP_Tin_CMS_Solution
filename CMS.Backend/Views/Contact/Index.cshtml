@@ -1,4 +1,6 @@
-@model IEnumerable<CMS.Data.Entities.Contact>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<CMS.Data.Entities.Contact>
 @{
     ViewData["Title"] = "Liên hệ";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -24,8 +26,8 @@
 else
 {
     <div class="data-card p-0">
-        <div class="table-responsive">
-            <table class="table-admin">
+        <div class="admin-table">
+            <table class="admin-table">
                 <thead>
                     <tr>
                         <th style="width:50px;text-align:center;">#</th>
@@ -81,6 +83,13 @@ else
                     }
                 </tbody>
             </table>
+            <div class="pagination-container" style="margin-top:20px; padding-bottom:20px; display:flex; justify-content:center;">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" }
+                })
+            </div>
         </div>
     </div>
 }
+

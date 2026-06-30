@@ -20,12 +20,40 @@ namespace CMS.Backend.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int? categoryProductId = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null,
+            [FromQuery] string? keyword = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 1000) // Default to 1000 to not break frontend Shop which expects all
         {
-            var products = await _context.Products
+            var query = _context.Products
                 .Where(p => !p.IsDeleted)
                 .Include(p => p.CategoryProduct)
+                .AsQueryable();
+
+            if (categoryProductId.HasValue)
+            {
+                query = query.Where(p => p.CategoryProductId == categoryProductId.Value);
+            }
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query = query.Where(p => p.Name.Contains(keyword) || (p.Description != null && p.Description.Contains(keyword)));
+            }
+
+            var products = await query
                 .OrderByDescending(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(p => new {
                     p.Id,
                     p.Name,
@@ -42,6 +70,55 @@ namespace CMS.Backend.Controllers
                 .ToListAsync();
 
             return Ok(products);
+        }
+
+        // GET: api/Products/hot-products
+        [HttpGet("hot-products")]
+        public async Task<IActionResult> GetHotProducts()
+        {
+            var hotProducts = await _context.OrderDetails
+                .GroupBy(od => od.ProductId)
+                .Select(g => new {
+                    ProductId = g.Key,
+                    TotalSold = g.Sum(od => od.Quantity)
+                })
+                .OrderByDescending(x => x.TotalSold)
+                .Take(3)
+                .Join(_context.Products, 
+                    hp => hp.ProductId, 
+                    p => p.Id, 
+                    (hp, p) => p)
+                .Where(p => !p.IsDeleted)
+                .Select(p => new {
+                    p.Id,
+                    p.Name,
+                    p.Description,
+                    p.Price,
+                    p.StockQuantity,
+                    p.ImageUrl,
+                    p.CategoryProductId
+                })
+                .ToListAsync();
+
+            if (!hotProducts.Any())
+            {
+                hotProducts = await _context.Products
+                    .Where(p => !p.IsDeleted)
+                    .OrderByDescending(p => p.Id)
+                    .Take(3)
+                    .Select(p => new {
+                        p.Id,
+                        p.Name,
+                        p.Description,
+                        p.Price,
+                        p.StockQuantity,
+                        p.ImageUrl,
+                        p.CategoryProductId
+                    })
+                    .ToListAsync();
+            }
+
+            return Ok(hotProducts);
         }
 
         // GET: api/Products/categoryproduct/5

@@ -84,7 +84,11 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
         ClassicEditor
-            .create(document.querySelector('#Content'))
+            .create(document.querySelector('#Content'), {
+                ckfinder: {
+                    uploadUrl: '/Post/UploadImage'
+                }
+            })
             .then(editor => {
                 // Custom dark mode styles for CKEditor
                 editor.editing.view.change(writer => {
@@ -97,3 +101,4 @@
             });
     </script>
 }
+

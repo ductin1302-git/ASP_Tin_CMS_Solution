@@ -20,10 +20,27 @@ namespace CMS.Backend.Controllers
 
         // GET: api/Posts
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int? categoryId = null,
+            [FromQuery] string? keyword = null,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 1000)
         {
-            var posts = await _context.Posts
+            var query = _context.Posts.AsQueryable();
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query = query.Where(p => p.Title.Contains(keyword) || (p.Content != null && p.Content.Contains(keyword)));
+            }
+
+            var posts = await query
                 .OrderByDescending(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(p => new {            
                     p.Id, 
                     p.Title, 

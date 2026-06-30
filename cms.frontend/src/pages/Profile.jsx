@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Package, ChevronDown, ChevronUp, Save, Clock, CheckCircle, Truck, PackageOpen, Camera } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Profile.css';
+import { API_BASE_URL } from '../config/api';
 
 const Profile = () => {
   const { user, login } = useAuth();
@@ -45,12 +46,13 @@ const Profile = () => {
     if (activeTab === 'orders') {
       fetchOrders();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, activeTab, navigate]);
 
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch(`https://localhost:7003/api/Orders/Customer/${user.id}`);
+      const res = await fetch(`${API_BASE_URL}/api/Orders/Customer/${user.id}`);
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
@@ -84,7 +86,7 @@ const Profile = () => {
         password: formData.password || "" // Mật khẩu rỗng sẽ được API giữ nguyên mật khẩu cũ
       };
 
-      const res = await fetch(`https://localhost:7003/api/Customers/${user.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/Customers/${user.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData)
@@ -132,7 +134,7 @@ const Profile = () => {
     uploadData.append('file', file);
 
     try {
-      const res = await fetch(`https://localhost:7003/api/Customers/${user.id}/avatar`, {
+      const res = await fetch(`${API_BASE_URL}/api/Customers/${user.id}/avatar`, {
         method: 'POST',
         body: uploadData
       });
@@ -168,7 +170,7 @@ const Profile = () => {
           <div className="profile-avatar-section">
             <div className="profile-avatar-container" onClick={() => fileInputRef.current?.click()} title="Thay đổi ảnh đại diện">
               {user.avatarUrl ? (
-                <img src={`https://localhost:7003${user.avatarUrl}`} alt="Avatar" className="profile-avatar-img" />
+                <img src={`${API_BASE_URL}${user.avatarUrl}`} alt="Avatar" className="profile-avatar-img" />
               ) : (
                 <div className="profile-avatar">
                   {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
@@ -309,7 +311,7 @@ const Profile = () => {
                         {order.orderDetails && order.orderDetails.map((item, index) => (
                           <div key={index} className="order-item">
                             <img 
-                              src={item.productImage ? `https://localhost:7003${item.productImage}` : '/placeholder.jpg'} 
+                              src={item.productImage ? `${API_BASE_URL}${item.productImage}` : '/placeholder.jpg'} 
                               alt={item.productName} 
                               className="order-item-img" 
                               onError={(e) => { 

@@ -1,4 +1,6 @@
-@model IEnumerable<CMS.Data.Entities.Customer>
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model X.PagedList.IPagedList<CMS.Data.Entities.Customer>
 @{
     ViewData["Title"] = "Khách hàng";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -19,7 +21,7 @@
         <div class="data-card-title">
             <span class="title-icon"><i class="bi bi-people"></i></span>
             Danh sách khách hàng
-            <span class="badge-admin badge-success" style="margin-left:6px;">@Model.Count() khách</span>
+            <span class="badge-admin badge-success" style="margin-left:6px;">@Model.TotalItemCount khách</span>
         </div>
     </div>
     <div style="overflow-x:auto;">
@@ -92,6 +94,13 @@
                     }
                 </tbody>
             </table>
+            <div class="pagination-container" style="margin-top:20px; display:flex; justify-content:center;">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" }
+                })
+            </div>
         }
     </div>
 </div>
+

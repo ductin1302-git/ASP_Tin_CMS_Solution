@@ -22,13 +22,13 @@ const PostList = () => {
     }, []);
 
     if (loading) {
-        return <div className="text-center my-4">Đang tải tin tức thời trang...</div>;
+        return <div className="text-center my-4">Đang tải tin tức thể thao...</div>;
     }
 
     return (
         <div className="mt-5">
             <h4 className="mb-4 text-uppercase text-secondary font-weight-bold border-bottom pb-2">
-                <i className="fa-solid fa-newspaper text-info mr-2"></i> Xu hướng & Bí quyết mặc đẹp
+                <i className="fa-solid fa-newspaper text-info mr-2"></i> Xu hướng & Bí quyết thể thao
             </h4>
             
             {posts.length === 0 ? (
@@ -45,7 +45,7 @@ const PostList = () => {
                                         </a>
                                     </h5>
                                     <p className="card-text text-muted small">
-                                        {post.shortDescription || 'Đang cập nhật nội dung tóm tắt cho bài viết...'}
+                                        {post.shortDescription || 'Đang cập nhật nội dung tóm tắt cho bài viết thể thao...'}
                                     </p>
                                     <div className="d-flex justify-content-between align-items-center text-secondary small">
                                         <span>

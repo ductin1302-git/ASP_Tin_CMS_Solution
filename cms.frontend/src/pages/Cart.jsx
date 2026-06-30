@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../data/mockData';
 import './Cart.css';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'https://localhost:7003';
+const PRODUCT_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop';
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartCount } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartCount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
   // Form State removed, using dedicated Checkout page instead.
 
   const getImageUrl = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop';
+    if (!url) return PRODUCT_IMAGE_FALLBACK;
     if (url.startsWith('http')) return url;
+    if (url.startsWith('/images/')) return url;
+    if (url.startsWith('/img/')) return PRODUCT_IMAGE_FALLBACK;
     return `${API_BASE_URL}${url}`;
   };
 

@@ -7,10 +7,12 @@ using CMS.Data.Entities;
 using CMS.Data;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using X.PagedList;
 
 namespace CMS.Backend.Controllers
 {
     [Authorize]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class CategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,10 +23,12 @@ namespace CMS.Backend.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? page)
         {
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
             // Lấy dữ liệu THẬT từ bảng Categories trong SQL
-            var data = _context.Categories.ToList(); 
+            var data = _context.Categories.OrderByDescending(c => c.Id).ToPagedList(pageNumber, pageSize); 
             return View(data);
         }
 

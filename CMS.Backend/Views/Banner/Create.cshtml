@@ -1,0 +1,75 @@
+﻿@model CMS.Data.Entities.Banner
+
+@{
+    ViewData["Title"] = "ThÃªm má»›i Banner";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <h1 class="page-title mb-4">ThÃªm má»›i Banner</h1>
+
+    <div class="data-card mb-4">
+        <div class="card-body">
+            <form asp-action="Create" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="form-group">
+                    <label asp-for="PageName" class="form-label-admin">Hiá»ƒn thá»‹ á»Ÿ trang</label>
+                    <select asp-for="PageName" class="form-control-admin" required>
+                        <option value="Home">Trang chá»§ (Home)</option>
+                        <option value="Shop">Cá»­a hÃ ng (Shop)</option>
+                        <option value="News">Tin tá»©c (News)</option>
+                        <option value="Contact">LiÃªn há»‡ (Contact)</option>
+                    </select>
+                    <span asp-validation-for="PageName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Title" class="form-label-admin">TiÃªu Ä‘á» Banner</label>
+                    <input asp-for="Title" class="form-control-admin" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label-admin">Táº£i lÃªn HÃ¬nh áº£nh / Video (.mp4)</label>
+                    <input type="file" name="imageFile" class="form-control-admin" accept="image/*,video/mp4" required />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="LinkUrl" class="form-label-admin">ÄÆ°á»ng dáº«n khi click (URL)</label>
+                    <input asp-for="LinkUrl" class="form-control-admin" />
+                    <span asp-validation-for="LinkUrl" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Description" class="form-label-admin">MÃ´ táº£ ngáº¯n</label>
+                    <textarea asp-for="Description" class="form-control-admin" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="DisplayOrder" class="form-label-admin">Thá»© tá»± hiá»ƒn thá»‹</label>
+                    <input asp-for="DisplayOrder" class="form-control-admin" type="number" value="0" />
+                    <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                </div>
+
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsActive" checked /> Äang hoáº¡t Ä‘á»™ng (Hiá»ƒn thá»‹)
+                    </label>
+                </div>
+
+                <div class="form-group mt-4">
+                    <input type="submit" value="Táº¡o má»›i" class="btn-sport btn-primary-sport" />
+                    <a asp-action="Index" class="btn-sport btn-secondary-sport">Quay láº¡i danh sÃ¡ch</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

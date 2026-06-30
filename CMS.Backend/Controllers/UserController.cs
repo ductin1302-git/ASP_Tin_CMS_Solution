@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace CMS.Backend.Controllers
 {
     [Authorize(Roles = "Admin")]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _context;

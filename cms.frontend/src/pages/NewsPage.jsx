@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Tag, ArrowRight } from 'lucide-react';
 import './NewsPage.css';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'https://localhost:7003';
+const SPORTS_IMAGE_FALLBACK = 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800&auto=format&fit=crop';
 
 const NewsPage = () => {
   const [posts, setPosts] = useState([]);
@@ -11,14 +12,16 @@ const NewsPage = () => {
   const [error, setError] = useState(null);
 
   const getImageUrl = (url) => {
-    if (!url) return 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800&auto=format&fit=crop';
+    if (!url) return SPORTS_IMAGE_FALLBACK;
     if (url.startsWith('http')) return url;
+    if (url.startsWith('/images/')) return url;
+    if (url.startsWith('/img/')) return SPORTS_IMAGE_FALLBACK;
     return `${API_BASE_URL}${url}`;
   };
 
   useEffect(() => {
     // Kết nối tới Backend (Cổng 7003)
-    fetch('https://localhost:7003/api/posts')
+    fetch(`${API_BASE_URL}/api/posts`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Lỗi khi tải dữ liệu từ máy chủ');
@@ -67,7 +70,7 @@ const NewsPage = () => {
                     src={getImageUrl(post.imageUrl)} 
                     alt={post.title} 
                     className="news-image"
-                    onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=800&auto=format&fit=crop' }} 
+                    onError={(e) => { e.target.src = SPORTS_IMAGE_FALLBACK }} 
                   />
                 </Link>
                 {post.categoryName && <span className="badge news-badge">{post.categoryName}</span>}

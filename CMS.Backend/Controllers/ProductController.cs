@@ -15,6 +15,7 @@ using X.PagedList;
 namespace CMS.Backend.Controllers
 {
     [Authorize]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;

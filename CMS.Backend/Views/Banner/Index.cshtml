@@ -1,0 +1,75 @@
+﻿@model IEnumerable<CMS.Data.Entities.Banner>
+
+@{
+    ViewData["Title"] = "Quáº£n lÃ½ Banner/Video";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="page-title">Quáº£n lÃ½ Banner/Video</h1>
+        <a asp-action="Create" class="btn-sport btn-primary-sport">
+            <i class="fas fa-plus fa-sm text-white-50"></i> ThÃªm má»›i Banner
+        </a>
+    </div>
+
+    <div class="data-card mb-4">
+        <div class="data-card-header">
+            <h6 class="data-card-title">Danh sÃ¡ch Banner Ä‘ang cháº¡y trÃªn trang chá»§</h6>
+        </div>
+        <div class="card-body">
+            <div class="admin-table">
+                <table class="admin-table" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>HÃ¬nh áº£nh / Video</th>
+                            <th>TiÃªu Ä‘á»</th>
+                            <th>Trang hiá»ƒn thá»‹</th>
+                            <th>Thá»© tá»±</th>
+                            <th>Tráº¡ng thÃ¡i</th>
+                            <th>HÃ nh Ä‘á»™ng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model) {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl)) {
+                                        if (item.ImageUrl.EndsWith(".mp4") || item.ImageUrl.EndsWith(".webm")) {
+                                            <video src="@item.ImageUrl" width="150" autoplay muted loop></video>
+                                        } else {
+                                            <img src="@item.ImageUrl" alt="@item.Title" width="150" class="img-thumbnail" />
+                                        }
+                                    } else {
+                                        <span class="text-muted">KhÃ´ng cÃ³ áº£nh</span>
+                                    }
+                                </td>
+                                <td>
+                                    <strong>@item.Title</strong><br />
+                                    <small class="text-muted">Link: @item.LinkUrl</small>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info">@item.PageName</span>
+                                </td>
+                                <td>@item.DisplayOrder</td>
+                                <td>
+                                    @if (item.IsActive) {
+                                        <span class="badge badge-success">Äang hiá»ƒn thá»‹</span>
+                                    } else {
+                                        <span class="badge badge-secondary">ÄÃ£ áº©n</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn-sport btn-warning-sport btn-sm-sport">Sá»­a</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn-sport btn-danger-sport btn-sm-sport">XÃ³a</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

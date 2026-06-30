@@ -136,6 +136,7 @@
                         <th style="text-align:right;">Đơn giá</th>
                         <th style="text-align:center;">Số lượng</th>
                         <th style="text-align:right;">Thành tiền</th>
+                        <th style="text-align:center;">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -163,9 +164,25 @@
                             </td>
                             <td style="text-align:right;" class="price-text">@item.UnitPrice.ToString("N0") ₫</td>
                             <td style="text-align:center;">
-                                <span class="badge-admin badge-primary">x @item.Quantity</span>
+                                <form asp-action="UpdateItemQuantity" asp-controller="Order" method="post" style="display:flex;align-items:center;justify-content:center;gap:4px;">
+                                    <input type="hidden" name="orderDetailId" value="@item.Id" />
+                                    <input type="hidden" name="orderId" value="@Model.Id" />
+                                    <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control-admin" style="width:70px;padding:2px 4px;text-align:center;height:32px;" title="Cập nhật số lượng" />
+                                    <button type="submit" class="btn-sport btn-secondary-sport" style="padding:2px 8px;height:32px;font-size:14px;" title="Lưu số lượng">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                </form>
                             </td>
                             <td style="text-align:right;" class="price-text">@lineTotal.ToString("N0") ₫</td>
+                            <td style="text-align:center;">
+                                <form asp-action="RemoveItem" asp-controller="Order" method="post" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn hủy sản phẩm này khỏi đơn hàng?');">
+                                    <input type="hidden" name="orderDetailId" value="@item.Id" />
+                                    <input type="hidden" name="orderId" value="@Model.Id" />
+                                    <button type="submit" class="btn-sport btn-danger-sport" style="padding:4px 8px;font-size:12px;display:inline-flex;align-items:center;gap:4px;" title="Hủy sản phẩm">
+                                        <i class="bi bi-x-circle"></i> Hủy
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     }
                     <tr class="order-total-row">
@@ -175,6 +192,7 @@
                         <td style="text-align:right;" class="price-text" style="font-size:18px;">
                             @totalAmount.ToString("N0") ₫
                         </td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -188,3 +206,4 @@
         }
     </div>
 </div>
+

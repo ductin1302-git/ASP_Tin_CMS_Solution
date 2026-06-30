@@ -18,5 +18,8 @@ namespace CMS.Data.Entities
         public int DisplayOrder { get; set; }
 
         public bool IsActive { get; set; }
+
+        [Required]
+        public string PageName { get; set; } = "Home";
     }
 }
